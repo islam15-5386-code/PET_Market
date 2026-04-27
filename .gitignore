@@ -1,0 +1,37 @@
+# ── Laravel ───────────────────────────────────────────────────────────────────
+src/vendor/
+src/.env
+src/.env.production
+src/.env.local
+src/storage/logs/*.log
+src/storage/framework/cache/data/*
+src/storage/framework/sessions/*
+src/storage/framework/views/*
+src/bootstrap/cache/*.php
+src/.phpunit.result.cache
+
+# ── Next.js ───────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env.production
+frontend/.env*.local
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.code-workspace
+
+# ── Secrets ───────────────────────────────────────────────────────────────────
+*.pem
+*.key
+*.cert
+.env.production
+.env.staging
