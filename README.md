@@ -52,7 +52,10 @@ petmarket/
 # 1. Unzip and enter the project directory
 cd petmarket
 
-# 2. Start everything
+# 2. Download the .env file and place it inside the src folder
+https://drive.google.com/file/d/1QtpUW0G5FO_jPDbbXGLBvFt-8nIrMwcd/view?usp=sharing
+
+# 3. Start everything
 docker-compose up --build
 ```
 
