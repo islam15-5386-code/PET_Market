@@ -151,9 +151,6 @@ export default function RegisterPage() {
         </Link>
       </p>
 
-      <div className="mt-4">
-        <SocialAuthButtons label="sign up" />
-      </div>
     </div>
   )
 }

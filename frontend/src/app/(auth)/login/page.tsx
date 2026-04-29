@@ -117,10 +117,6 @@ export default function LoginPage() {
           Create one
         </Link>
       </p>
-
-      <div className="mt-4">
-        <SocialAuthButtons label="sign in" />
-      </div>
     </div>
   )
 }
