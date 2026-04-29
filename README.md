@@ -86,9 +86,6 @@ Register new customer accounts via the frontend or the `/api/auth/register` endp
 
 ## API Overview
 
-### Visit the site to view the published documentation: 
-https://documenter.getpostman.com/view/54061227/2sBXqJKg2X
-
 Base URL: `http://localhost:8000/api`
 
 ### Auth
