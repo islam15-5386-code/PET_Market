@@ -1,22 +1,32 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import Cookies from 'js-cookie'
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
 export const TOKEN_KEY = 'pm_token'
 
-// ── Axios instance ────────────────────────────────────────────────────────────
+function resolveApiBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL
+  }
+
+  if (typeof window !== 'undefined') {
+    const protocol = window.location.protocol
+    const host = window.location.hostname
+    return `${protocol}//${host}:8000/api`
+  }
+
+  return 'http://127.0.0.1:8000/api'
+}
+
+const apiBaseUrl = resolveApiBaseUrl()
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
   withCredentials: true,
 })
-
-// ── Request interceptor — attach JWT token ────────────────────────────────────
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -28,8 +38,6 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error),
 )
-
-// ── Response interceptor — handle 401, attempt token refresh ─────────────────
 
 let isRefreshing = false
 let refreshSubscribers: Array<(token: string) => void> = []
@@ -50,7 +58,6 @@ api.interceptors.response.use(
       _retry?: boolean
     }
 
-    // Only attempt refresh on 401, not on the refresh endpoint itself
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -59,7 +66,6 @@ api.interceptors.response.use(
       originalRequest._retry = true
 
       if (isRefreshing) {
-        // Queue this request until the refresh completes
         return new Promise((resolve) => {
           subscribeTokenRefresh((newToken: string) => {
             if (originalRequest.headers) {
@@ -86,7 +92,6 @@ api.interceptors.response.use(
 
         return api(originalRequest)
       } catch {
-        // Refresh failed — clear token and redirect to login
         Cookies.remove(TOKEN_KEY)
         if (typeof window !== 'undefined') {
           window.location.href = '/login'
@@ -103,14 +108,8 @@ api.interceptors.response.use(
 
 export default api
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/**
- * Extract a user-friendly error message from an Axios error.
- */
 export function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
-    // Validation errors — return first field error
     const errors = error.response?.data?.errors as
       | Record<string, string[]>
       | undefined
@@ -118,13 +117,13 @@ export function getErrorMessage(error: unknown): string {
       const firstField = Object.values(errors)[0]
       if (firstField?.[0]) return firstField[0]
     }
-    // API-level message
+
     if (error.response?.data?.message) {
       return error.response.data.message as string
     }
-    // Network error
-    if (error.message === 'Network Error') {
-      return 'Cannot connect to the server. Please check your connection.'
+
+    if (error.message === 'Network Error' || (error as AxiosError).code === 'ERR_NETWORK') {
+      return `Cannot connect to the server (${apiBaseUrl}). Please check backend server and CORS.`
     }
   }
   return 'An unexpected error occurred. Please try again.'

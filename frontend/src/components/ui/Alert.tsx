@@ -11,6 +11,7 @@ interface AlertProps {
   title?: string
   message: string
   className?: string
+  onDismiss?: () => void
 }
 
 const config: Record<
@@ -40,6 +41,7 @@ export function Alert({
   title,
   message,
   className,
+  onDismiss,
 }: AlertProps) {
   const { icon: Icon, classes } = config[variant]
 
@@ -53,10 +55,20 @@ export function Alert({
       )}
     >
       <Icon className="mt-0.5 h-5 w-5 shrink-0" />
-      <div className="text-sm">
+      <div className="text-sm flex-1">
         {title && <p className="font-semibold">{title}</p>}
         <p className={title ? 'mt-0.5 opacity-90' : ''}>{message}</p>
       </div>
+      {onDismiss && (
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Dismiss alert"
+          className="text-current/70 hover:text-current transition"
+        >
+          ×
+        </button>
+      )}
     </div>
   )
 }

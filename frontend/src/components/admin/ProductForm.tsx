@@ -4,19 +4,27 @@ import React, { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useCategories } from '@/hooks/useCategories'
-import type { ProductFormInput } from '@/lib/admin/products'
+import type { AIGeneratedDescription, ProductFormInput } from '@/lib/admin/products'
 
 interface ProductFormProps {
   initialValues?: Partial<ProductFormInput>
   onSubmit: (data: ProductFormInput) => Promise<void>
+  onGenerateDescription?: (data: ProductFormInput) => Promise<AIGeneratedDescription>
   submitting: boolean
+  generating?: boolean
+  generated?: AIGeneratedDescription | null
+  generateError?: string
   submitLabel?: string
 }
 
 export function ProductForm({
   initialValues,
   onSubmit,
+  onGenerateDescription,
   submitting,
+  generating = false,
+  generated = null,
+  generateError = '',
   submitLabel = 'Save Product',
 }: ProductFormProps) {
   const { categories } = useCategories()
@@ -72,6 +80,12 @@ export function ProductForm({
     await onSubmit(form)
   }
 
+  async function handleGenerate() {
+    if (!onGenerateDescription) return
+    if (!validate()) return
+    await onGenerateDescription(form)
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       {/* Category */}
@@ -110,7 +124,20 @@ export function ProductForm({
 
       {/* Description */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-gray-700">Description</label>
+        <div className="flex items-center justify-between gap-3">
+          <label className="text-sm font-medium text-gray-700">Description</label>
+          {onGenerateDescription && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleGenerate}
+              loading={generating}
+            >
+              Generate AI Description
+            </Button>
+          )}
+        </div>
         <textarea
           name="description"
           value={form.description ?? ''}
@@ -119,6 +146,27 @@ export function ProductForm({
           placeholder="Describe the product..."
           className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
         />
+        {generateError && (
+          <p className="text-xs text-red-600">{generateError}</p>
+        )}
+        {generated && (
+          <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm">
+            <p className="font-semibold text-orange-700">
+              AI Generated ({generated.source}{generated.cached ? ', cached' : ''})
+            </p>
+            <p className="mt-1 text-gray-700">
+              <span className="font-medium">Suggested Title:</span> {generated.title}
+            </p>
+            <p className="mt-1 text-gray-700">
+              <span className="font-medium">SEO Keywords:</span> {generated.seo_keywords.join(', ')}
+            </p>
+            <ul className="mt-1 text-gray-700 list-disc list-inside">
+              {generated.benefits.map((benefit, index) => (
+                <li key={`${benefit}-${index}`}>{benefit}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Price + Stock */}

@@ -23,6 +23,7 @@ export function ProductFiltersPanel({
   const { categories } = useCategories()
 
   const hasActiveFilters =
+    filters.category ||
     filters.category_id ||
     filters.min_price != null ||
     filters.max_price != null ||
@@ -55,10 +56,10 @@ export function ProductFiltersPanel({
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Category</h3>
         <div className="flex flex-col gap-1.5">
           <button
-            onClick={() => onChange({ category_id: null, page: 1 })}
+            onClick={() => onChange({ category: null, category_id: null, page: 1 })}
             className={clsx(
               'text-left text-sm px-3 py-2 rounded-xl transition-colors',
-              !filters.category_id
+              !filters.category && !filters.category_id
                 ? 'bg-orange-50 text-orange-700 font-semibold'
                 : 'text-gray-600 hover:bg-gray-50',
             )}
@@ -68,10 +69,10 @@ export function ProductFiltersPanel({
           {categories.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => onChange({ category_id: cat.id, page: 1 })}
+              onClick={() => onChange({ category: cat.slug, category_id: cat.id, page: 1 })}
               className={clsx(
                 'text-left text-sm px-3 py-2 rounded-xl transition-colors flex items-center justify-between',
-                filters.category_id === cat.id
+                filters.category === cat.slug || filters.category_id === cat.id
                   ? 'bg-orange-50 text-orange-700 font-semibold'
                   : 'text-gray-600 hover:bg-gray-50',
               )}

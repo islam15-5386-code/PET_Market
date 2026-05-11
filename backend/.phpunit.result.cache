@@ -1,0 +1,1 @@
+{"version":2,"defects":[],"times":{"Tests\\Feature\\AIDescriptionGenerationTest::test_unauthorized_user_cannot_generate_description":0.061,"Tests\\Feature\\AIDescriptionGenerationTest::test_admin_can_generate_and_reuse_cached_description":0.052}}

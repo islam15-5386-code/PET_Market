@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
@@ -11,16 +11,25 @@ import { Input } from '@/components/ui/Input'
 import { Alert } from '@/components/ui/Alert'
 import { SocialAuthButtons } from '@/components/auth/SocialAuthButtons'
 
-export default function LoginPage() {
+function LoginPageContent() {
   const searchParams = useSearchParams()
   const { login } = useAuth()
 
   const [form, setForm] = useState({ email: '', password: '' })
+  const [rememberMe, setRememberMe] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const redirectTo = searchParams.get('redirect') ?? '/'
+
+  React.useEffect(() => {
+    const savedEmail = window.localStorage.getItem('pm_remember_email')
+    if (savedEmail) {
+      setForm((prev) => ({ ...prev, email: savedEmail }))
+      setRememberMe(true)
+    }
+  }, [])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -34,6 +43,12 @@ export default function LoginPage() {
 
     try {
       const user = await login({ email: form.email, password: form.password })
+
+      if (rememberMe) {
+        window.localStorage.setItem('pm_remember_email', form.email.trim())
+      } else {
+        window.localStorage.removeItem('pm_remember_email')
+      }
 
       // Use a hard navigation (window.location) so the browser sends the
       // freshly-set cookie on the next request and middleware sees it correctly.
@@ -101,9 +116,20 @@ export default function LoginPage() {
         </div>
 
         <div className="flex justify-end">
-          <Link href="/forgot-password" className="link-brand text-sm">
-            Forgot password?
-          </Link>
+          <div className="flex w-full items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400"
+              />
+              Remember email
+            </label>
+            <Link href="/forgot-password" className="link-brand text-sm">
+              Forgot password?
+            </Link>
+          </div>
         </div>
 
         <Button type="submit" fullWidth loading={loading} size="lg">
@@ -118,5 +144,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="auth-card" />}>
+      <LoginPageContent />
+    </Suspense>
   )
 }

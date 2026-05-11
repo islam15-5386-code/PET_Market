@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Spinner } from '@/components/ui/Spinner'
 import { saveToken } from '@/lib/auth'
@@ -11,7 +11,7 @@ import { saveToken } from '@/lib/auth'
  *
  * We save the token and redirect the user to the home page.
  */
-export default function SocialCallbackPage() {
+function SocialCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -34,5 +34,13 @@ export default function SocialCallbackPage() {
       <Spinner size="lg" />
       <p className="text-sm text-gray-500">Completing sign-in…</p>
     </div>
+  )
+}
+
+export default function SocialCallbackPage() {
+  return (
+    <Suspense fallback={<Spinner size="lg" />}>
+      <SocialCallbackContent />
+    </Suspense>
   )
 }

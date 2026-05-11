@@ -225,3 +225,50 @@ nginx:
 docker-compose down -v --rmi local
 docker-compose up --build
 ```
+
+## Marketplace Scale Seeding (1,000,000 products)
+
+### 1) Migrate schema/index updates
+```bash
+cd src
+php artisan migrate
+```
+
+### 2) Seed fixed categories (exact 10)
+```bash
+php artisan db:seed --class=CategorySeeder
+```
+
+### 3) Seed 1,000,000 products in chunks
+```bash
+# resumable seed
+php artisan seed:marketplace-products --chunk=5000
+
+# optional fresh product-only reseed
+php artisan seed:marketplace-products --fresh --chunk=5000
+```
+
+### 4) Verify counts and seed health
+```bash
+php artisan verify:marketplace-seed
+```
+
+### Expected API usage
+```http
+GET /api/categories
+GET /api/products?search=dog&category=dog-food&min_price=500&max_price=2500&location=Dhaka&page=1&limit=20
+GET /api/products/{slug}
+```
+
+### API response pagination fields
+- `data.products`
+- `data.meta.current_page`
+- `data.meta.per_page`
+- `data.meta.total`
+- `data.meta.total_pages`
+
+### Frontend test steps
+1. Open `/` and confirm 10 category cards load from API.
+2. Click a category card and confirm `/products?category=<slug>` filter is applied.
+3. Use search, price, and location filters and confirm paginated results.
+4. Confirm product list requests never exceed `limit=100`.

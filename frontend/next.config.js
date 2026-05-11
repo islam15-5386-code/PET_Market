@@ -13,6 +13,11 @@ const nextConfig = {
         hostname: 'api.petmarketplace.com',
         pathname: '/storage/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
     ],
   },
 

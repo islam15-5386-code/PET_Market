@@ -188,7 +188,7 @@ export default function CheckoutPage() {
             {/* Items */}
             <div className="flex flex-col gap-3 max-h-60 overflow-y-auto pr-1">
               {(preview?.items ?? cartItems).map((item, i) => {
-                const name = 'product_name' in item ? item.product_name : item.product_name
+                const name = item.product_name
                 const image = 'product_image' in item ? item.product_image : item.primary_image
                 const qty = item.quantity
                 const price = 'total_price' in item ? item.total_price : item.subtotal

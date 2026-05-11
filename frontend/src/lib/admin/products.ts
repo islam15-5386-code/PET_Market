@@ -33,6 +33,15 @@ export interface ProductFormInput {
   is_available?: boolean
 }
 
+export interface AIGeneratedDescription {
+  source: 'ai_model' | 'template_fallback'
+  title: string
+  description: string
+  seo_keywords: string[]
+  benefits: string[]
+  cached?: boolean
+}
+
 export async function fetchAdminProducts(params: {
   search?: string
   category_id?: number | null
@@ -105,4 +114,13 @@ export async function deleteProductImage(
     `/admin/products/${id}/images/${index}`,
   )
   return data.data!.product
+}
+
+export async function generateProductDescription(
+  id: number,
+): Promise<AIGeneratedDescription> {
+  const { data } = await api.post<
+    ApiResponse<AIGeneratedDescription>
+  >(`/admin/products/${id}/generate-description`)
+  return data.data!
 }

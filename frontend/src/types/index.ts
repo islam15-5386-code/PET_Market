@@ -79,6 +79,7 @@ export interface Category {
   name: string
   slug: string
   icon: string | null
+  image_url?: string | null
   description: string | null
   products_count?: number
 }
@@ -106,6 +107,7 @@ export interface ProductDetail extends Product {
 
 export interface ProductFilters {
   search?: string
+  category?: string | null
   category_id?: number | null
   min_price?: number | null
   max_price?: number | null

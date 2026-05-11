@@ -1,0 +1,52 @@
+
+> pet-marketplace-frontend@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1264ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1292ms (797 modules)
+ GET / 200 in 1497ms
+ ✓ Compiled in 230ms (363 modules)
+ ✓ Compiled /products in 501ms (797 modules)
+ GET /products?category=pet-beds&category_id=6 200 in 648ms
+ GET /products?category=pet-beds&category_id=6 200 in 55ms
+ ✓ Compiled in 376ms (811 modules)
+ ○ Compiling /cart ...
+ ✓ Compiled /cart in 593ms (833 modules)
+ ✓ Compiled in 127ms (383 modules)
+ ✓ Compiled /_not-found in 259ms (822 modules)
+ GET /_next/static/css/app/layout.css?v=1778512504453 404 in 390ms
+ GET /_next/static/css/app/layout.css?v=1778512504453 404 in 58ms
+ GET /products?category=cat-food&category_id=2 200 in 67ms
+ GET /_next/static/css/app/layout.css?v=1778512508620 404 in 34ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 37ms
+ GET /_next/static/chunks/main-app.js?v=1778512508620 404 in 38ms
+ GET /_next/static/chunks/app/products/page.js 404 in 37ms
+ GET /products?category=cat-food&category_id=2 200 in 62ms
+ GET /_next/static/css/app/layout.css?v=1778512510629 404 in 18ms
+ GET /_next/static/chunks/main-app.js?v=1778512510629 404 in 31ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 31ms
+ GET /_next/static/chunks/app/products/page.js 404 in 29ms
+ ✓ Compiled / in 140ms (458 modules)
+ GET / 200 in 269ms
+ ✓ Compiled /_not-found in 265ms (836 modules)
+ GET /products?category=cat-food&category_id=2 404 in 337ms
+ GET /_next/static/chunks/app/cart/page.js 404 in 78ms
+ GET /cart 200 in 66ms
+ GET /_next/static/chunks/app/cart/page.js 404 in 16ms
+ ✓ Compiled /login in 406ms (851 modules)
+ GET /login 200 in 493ms
+ ✓ Compiled /admin/dashboard in 323ms (896 modules)
+ GET /admin/dashboard 200 in 386ms
+ ✓ Compiled /admin/products in 255ms (908 modules)
+ ✓ Compiled /admin/categories in 210ms (920 modules)
+ ✓ Compiled /admin/users in 201ms (933 modules)
+ ✓ Compiled /admin/orders in 221ms (941 modules)
+ GET /_next/static/chunks/app/products/page.js 404 in 110ms
+ GET /products?category_id= 200 in 65ms
+ GET /_next/static/chunks/app/products/page.js 404 in 19ms

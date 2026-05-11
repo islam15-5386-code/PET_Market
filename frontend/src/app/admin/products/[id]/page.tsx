@@ -10,7 +10,12 @@ import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import { useAdminProduct } from '@/hooks/admin/useAdmin'
-import { updateProduct, type ProductFormInput } from '@/lib/admin/products'
+import {
+  generateProductDescription,
+  type AIGeneratedDescription,
+  updateProduct,
+  type ProductFormInput,
+} from '@/lib/admin/products'
 import { getErrorMessage } from '@/lib/api'
 
 export default function EditProductPage() {
@@ -24,6 +29,9 @@ export default function EditProductPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [removingIdx, setRemovingIdx] = useState<number | null>(null)
+  const [generating, setGenerating] = useState(false)
+  const [generated, setGenerated] = useState<AIGeneratedDescription | null>(null)
+  const [generateError, setGenerateError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleSubmit(data: ProductFormInput) {
@@ -51,6 +59,26 @@ export default function EditProductPage() {
       setError(getErrorMessage(err))
     }
     e.target.value = ''
+  }
+
+  async function handleGenerateDescription(formData: ProductFormInput) {
+    if (!id) return generated as AIGeneratedDescription
+    setGenerating(true)
+    setGenerateError('')
+    try {
+      const ai = await generateProductDescription(id)
+      setGenerated(ai)
+      setProduct((prev) => {
+        if (!prev) return prev
+        return { ...prev, name: ai.title || formData.name, description: ai.description || formData.description || '' }
+      })
+      return ai
+    } catch (err) {
+      setGenerateError(getErrorMessage(err))
+      throw err
+    } finally {
+      setGenerating(false)
+    }
   }
 
   async function handleRemoveImage(index: number) {
@@ -109,7 +137,11 @@ export default function EditProductPage() {
             is_available: product.is_available,
           }}
           onSubmit={handleSubmit}
+          onGenerateDescription={handleGenerateDescription}
           submitting={submitting}
+          generating={generating}
+          generated={generated}
+          generateError={generateError}
           submitLabel="Update Product"
         />
       </div>

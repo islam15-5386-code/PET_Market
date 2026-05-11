@@ -18,6 +18,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const { add } = useCart()
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
+  const [imgSrc, setImgSrc] = useState<string | null>(
+    product.primary_image || product.category?.image_url || null,
+  )
+  const [triedCategoryFallback, setTriedCategoryFallback] = useState(false)
 
   async function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault() // don't navigate to product page
@@ -48,13 +52,22 @@ export function ProductCard({ product }: ProductCardProps) {
     >
       {/* Image */}
       <div className="relative aspect-square bg-gray-100 overflow-hidden">
-        {product.primary_image ? (
+        {imgSrc ? (
           <Image
-            src={product.primary_image}
+            src={imgSrc}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            onError={() => {
+              // 1) Try category image once, 2) then show icon fallback
+              if (!triedCategoryFallback && product.category?.image_url) {
+                setTriedCategoryFallback(true)
+                setImgSrc(product.category.image_url)
+                return
+              }
+              setImgSrc(null)
+            }}
           />
         ) : (
           <div className="h-full flex items-center justify-center text-gray-300">
