@@ -36,7 +36,7 @@ services:
 
   # ── PostgreSQL 17 ─────────────────────────────────────────────────────────────
   postgres:
-    image: postgres:17-alpine
+    image: pgvector/pgvector:pg17
     container_name: petmarket_postgres
     restart: unless-stopped
     ports:
@@ -94,6 +94,25 @@ services:
       - petmarket_network
     depends_on:
       - app
+
+  # ── FastAPI AI Service ───────────────────────────────────────────────────────
+  ai_service:
+    image: python:3.11-slim
+    container_name: petmarket_ai_service
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./ai-service:/app
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8001"
+    networks:
+      - petmarket_network
+    depends_on:
+      - postgres
 
 # ── Named Volumes ──────────────────────────────────────────────────────────────
 volumes:

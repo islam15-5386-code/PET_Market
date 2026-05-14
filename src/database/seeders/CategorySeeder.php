@@ -8,16 +8,16 @@ use Illuminate\Database\Seeder;
 class CategorySeeder extends Seeder
 {
     public const CATEGORY_MAP = [
-        ['name' => 'Bird Supplies',   'slug' => 'bird-supplies',   'description' => 'Bird cages, food, toys and accessories',           'image_url' => 'https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Cat Food',        'slug' => 'cat-food',        'description' => 'Cat food, snacks, and nutrition products',          'image_url' => 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Collars & Leads', 'slug' => 'collars-leads',   'description' => 'Collars, leashes, harnesses and ID tags',            'image_url' => 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Dog Food',        'slug' => 'dog-food',        'description' => 'All types of dog food, treats and supplements',      'image_url' => 'https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Fish & Aquatics', 'slug' => 'fish-aquatics',   'description' => 'Aquariums, fish food, pumps and water care',          'image_url' => 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Pet Beds',        'slug' => 'pet-beds',        'description' => 'Beds, crates and sleeping accessories',                'image_url' => 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Pet Grooming',    'slug' => 'pet-grooming',    'description' => 'Shampoos, brushes and grooming tools',                 'image_url' => 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Pet Health',      'slug' => 'pet-health',      'description' => 'Vitamins, flea treatments and health products',        'image_url' => 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Pet Toys',        'slug' => 'pet-toys',        'description' => 'Toys and enrichment for all pet types',                'image_url' => 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?auto=format&fit=crop&w=1200&q=80'],
-        ['name' => 'Small Animals',   'slug' => 'small-animals',   'description' => 'Supplies for rabbits, hamsters, guinea pigs',          'image_url' => 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=1200&q=80'],
+        ['name' => 'Bird Supplies',   'slug' => 'bird-supplies',   'description' => 'Bird cages, food, toys and accessories',           'image_url' => '/products/bird/food/seed-mix/bird-seed-mix-1.jpg'],
+        ['name' => 'Cat Food',        'slug' => 'cat-food',        'description' => 'Cat food, snacks, and nutrition products',          'image_url' => '/products/cat/food/dry-food/cat-dry-food-1.jpg'],
+        ['name' => 'Collars & Leads', 'slug' => 'collars-leads',   'description' => 'Collars, leashes, harnesses and ID tags',            'image_url' => '/products/dog/accessories/collar/dog-collar-1.jpg'],
+        ['name' => 'Dog Food',        'slug' => 'dog-food',        'description' => 'All types of dog food, treats and supplements',      'image_url' => '/products/dog/food/dry-food/dog-dry-food-1.jpg'],
+        ['name' => 'Fish & Aquatics', 'slug' => 'fish-aquatics',   'description' => 'Aquariums, fish food, pumps and water care',          'image_url' => '/products/fish/accessories/aquarium/fish-aquarium-1.jpg'],
+        ['name' => 'Pet Beds',        'slug' => 'pet-beds',        'description' => 'Beds, crates and sleeping accessories',                'image_url' => '/products/dog/accessories/bed/dog-bed-1.jpg'],
+        ['name' => 'Pet Grooming',    'slug' => 'pet-grooming',    'description' => 'Shampoos, brushes and grooming tools',                 'image_url' => '/products/dog/grooming/brush/dog-brush-1.jpg'],
+        ['name' => 'Pet Health',      'slug' => 'pet-health',      'description' => 'Vitamins, flea treatments and health products',        'image_url' => '/products/dog/medicine/vitamin/dog-vitamin-1.jpg'],
+        ['name' => 'Pet Toys',        'slug' => 'pet-toys',        'description' => 'Toys and enrichment for all pet types',                'image_url' => '/products/dog/toys/chew-toy/dog-chew-toy-1.jpg'],
+        ['name' => 'Small Animals',   'slug' => 'small-animals',   'description' => 'Supplies for rabbits, hamsters, guinea pigs',          'image_url' => '/products/rabbit/accessories/cage/rabbit-cage-1.jpg'],
     ];
 
     public function run(): void

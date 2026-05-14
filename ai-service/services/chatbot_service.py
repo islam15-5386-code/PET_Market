@@ -1,32 +1,50 @@
-from services.openai_service import OpenAIService, OpenAIServiceError
+from schemas.chatbot_schema import ChatbotRequest
+from services.intent_classifier import classify_intent
+from services.product_filter_extractor import extract_filters
+from services.response_generator import generate_reply
+from services.safety_detector import detect_safety
 
-openai_service = OpenAIService()
 
+def run_chatbot(payload: ChatbotRequest):
+    message = payload.message.strip()
 
-def run_chatbot(message: str, pet_type: str | None = None, locale: str | None = "Bangladesh"):
-    pet_context = f"Pet type: {pet_type}. " if pet_type else ""
-    system_prompt = (
-        "You are a safe, practical pet care assistant. "
-        "Give friendly guidance for everyday pet care and suggest seeing a vet for emergencies."
+    filters = extract_filters(message)
+    intent, confidence = classify_intent(message)
+
+    safety_level, vet_warning = detect_safety(message)
+
+    if safety_level == 'emergency':
+        intent = 'emergency_warning'
+    elif safety_level == 'warning' and intent not in ['emergency_warning']:
+        intent = 'health_warning'
+
+    low_confidence = confidence < 0.45
+
+    reply = generate_reply(
+        intent=intent,
+        pet_type=filters['pet_type'],
+        category=filters['category'],
+        safety_level=safety_level,
+        vet_warning=vet_warning,
+        low_confidence=low_confidence,
     )
-    user_prompt = (
-        f"{pet_context}User locale: {locale or 'Bangladesh'}. "
-        f"User question: {message}\n"
-        "Keep response under 180 words. If symptoms seem severe, mention veterinarian consultation."
-    )
 
-    try:
-        reply = openai_service.generate_text(
-            system_prompt=system_prompt,
-            user_prompt=user_prompt,
-            temperature=0.4,
-            max_tokens=260,
-        )
-        return {
-            "success": True,
-            "reply": reply,
-            "model": openai_service.model,
-            "message": "Chatbot response generated successfully.",
-        }
-    except OpenAIServiceError as exc:
-        return {"success": False, "reply": None, "model": None, "message": str(exc)}
+    return {
+        'reply': reply,
+        'intent': intent,
+        'pet_type': filters['pet_type'],
+        'category': filters['category'],
+        'age_group': filters['age_group'],
+        'price_min': filters['price_min'],
+        'price_max': filters['price_max'],
+        'safety_level': safety_level,
+        'vet_warning': vet_warning,
+        'recommended_product_filters': {
+            'pet_type': filters['pet_type'],
+            'category': filters['category'],
+            'age_group': filters['age_group'],
+            'price_min': filters['price_min'],
+            'price_max': filters['price_max'],
+        },
+        'confidence': round(float(confidence), 4),
+    }

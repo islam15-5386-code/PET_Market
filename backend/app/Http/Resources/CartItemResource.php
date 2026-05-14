@@ -29,10 +29,13 @@ class CartItemResource extends JsonResource
         ];
     }
 
-    private function resolvePrimaryImage(?array $images): ?string
+    private function resolvePrimaryImage(?array $images): string
     {
-        if (empty($images)) return null;
+        if (empty($images)) return '/placeholder-product.png';
         $first = $images[0];
-        return str_starts_with($first, 'http') ? $first : asset('storage/' . $first);
+        if (str_starts_with($first, 'http') || str_starts_with($first, '/')) {
+            return $first;
+        }
+        return asset('storage/' . $first);
     }
 }

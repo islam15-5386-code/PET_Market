@@ -35,13 +35,18 @@ export function useDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([fetchDashboard(), fetchRevenueChart()])
-      .then(([snap, rev]) => {
-        setSnapshot(snap)
-        setRevenue(rev.revenue)
-        setGrandTotal(rev.grand_total)
-      })
-      .finally(() => setLoading(false))
+    const load = () =>
+      Promise.all([fetchDashboard(), fetchRevenueChart()])
+        .then(([snap, rev]) => {
+          setSnapshot(snap)
+          setRevenue(rev.revenue)
+          setGrandTotal(rev.grand_total)
+        })
+        .finally(() => setLoading(false))
+
+    load()
+    const interval = window.setInterval(load, 30000)
+    return () => window.clearInterval(interval)
   }, [])
 
   return { snapshot, revenue, grandTotal, loading }

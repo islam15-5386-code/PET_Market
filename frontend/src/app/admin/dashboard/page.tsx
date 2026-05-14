@@ -10,6 +10,7 @@ import { StatsCard } from '@/components/admin/StatsCard'
 import { RevenueChart } from '@/components/admin/RevenueChart'
 import { OrderStatusBadge } from '@/components/order/OrderStatusBadge'
 import { Spinner } from '@/components/ui/Spinner'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { useDashboard } from '@/hooks/admin/useAdmin'
 import type { OrderStatus } from '@/types'
 
@@ -28,7 +29,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <PageHeader title="Dashboard" description="Live marketplace overview, operational metrics, and alerts." />
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

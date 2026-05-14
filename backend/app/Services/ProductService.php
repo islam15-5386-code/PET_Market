@@ -42,11 +42,20 @@ class ProductService
         if (!empty($filters['location'])) {
             $query->byLocation($filters['location']);
         }
+        if (!empty($filters['pet_type'])) {
+            $op = \Illuminate\Support\Facades\DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where('pet_type', $op, '%' . $filters['pet_type'] . '%');
+        }
+        if (!empty($filters['age_group'])) {
+            $op = \Illuminate\Support\Facades\DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where('age_group', $op, '%' . $filters['age_group'] . '%');
+        }
 
         // Sorting
         match ($filters['sort'] ?? 'newest') {
             'price_asc'  => $query->orderBy('price', 'asc'),
             'price_desc' => $query->orderBy('price', 'desc'),
+            'rating'     => $query->orderBy('rating', 'desc')->orderBy('review_count', 'desc'),
             'oldest'     => $query->orderBy('created_at', 'asc'),
             default      => $query->latest(),
         };

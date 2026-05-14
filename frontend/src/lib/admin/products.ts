@@ -6,12 +6,29 @@ export interface AdminProduct {
   name: string
   slug: string
   description: string | null
+  ai_generated_title?: string | null
+  ai_generated_short_description?: string | null
+  ai_generated_long_description?: string | null
+  ai_seo_keywords?: string[]
+  ai_meta_title?: string | null
+  ai_meta_description?: string | null
+  ai_generated_tags?: string[]
+  ai_content_generated_at?: string | null
   price: string
   stock_quantity: number
   is_available: boolean
   images: string[]
   primary_image: string | null
+  image_url?: string | null
+  thumbnail_url?: string | null
   location: string | null
+  brand: string | null
+  pet_type?: string | null
+  sub_category?: string | null
+  category_type?: string | null
+  sku?: string | null
+  rating?: number
+  review_count?: number
   category: { id: number; name: string; icon: string | null } | null
   deleted_at: string | null
   created_at: string
@@ -31,15 +48,53 @@ export interface ProductFormInput {
   stock_quantity: number
   location?: string
   is_available?: boolean
+  brand?: string
+  ai_generated_title?: string
+  ai_generated_short_description?: string
+  ai_generated_long_description?: string
+  ai_seo_keywords?: string[]
+  ai_meta_title?: string
+  ai_meta_description?: string
+  ai_generated_tags?: string[]
+}
+
+export interface AIDescriptionGenerateInput {
+  product_id?: number
+  product_name: string
+  category: string
+  pet_type: string
+  age_group?: string
+  brand?: string
+  price?: number
+  weight_or_size?: string
+  ingredients_or_materials?: string[] | string
+  key_features?: string[] | string
+  usage_instruction?: string
+  safety_note?: string
+  target_customer?: string
+  language: 'English' | 'Bangla' | 'Bangla-English mixed'
+  tone: 'professional' | 'friendly' | 'SEO optimized'
 }
 
 export interface AIGeneratedDescription {
-  source: 'ai_model' | 'template_fallback'
-  title: string
-  description: string
+  professional_product_title: string
+  short_description: string
+  long_description: string
   seo_keywords: string[]
   benefits: string[]
-  cached?: boolean
+  care_instruction: string
+  usage_instruction: string
+  safety_warning: string
+  meta_title: string
+  meta_description: string
+  suggested_tags: string[]
+  provider_name: string
+  model_name: string
+  token_usage: {
+    prompt_tokens: number
+    completion_tokens: number
+    total_tokens: number
+  }
 }
 
 export async function fetchAdminProducts(params: {
@@ -117,10 +172,10 @@ export async function deleteProductImage(
 }
 
 export async function generateProductDescription(
-  id: number,
+  payload: AIDescriptionGenerateInput,
 ): Promise<AIGeneratedDescription> {
   const { data } = await api.post<
     ApiResponse<AIGeneratedDescription>
-  >(`/admin/products/${id}/generate-description`)
+  >('/ai/product-description/generate', payload)
   return data.data!
 }

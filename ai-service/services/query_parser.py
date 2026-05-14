@@ -1,237 +1,189 @@
 import re
-from difflib import get_close_matches
 from typing import Optional
 
-from services.recommendation import infer_category_semantic, recommend_categories
+from services.model_loader import loader
 
-
-CATEGORY_KEYWORDS = {
-    "Cat Food": ["cat food", "catfood", "kitten food", "feline food", "cat meal"],
-    "Dog Food": ["dog food", "dogfood", "puppy food", "canine food", "dog meal"],
-    "Bird Supplies": ["bird", "parrot", "avian", "bird food", "bird cage", "bird seed"],
-    "Fish & Aquatics": ["fish", "aquarium", "aquatic", "tank", "fish food"],
-    "Collars & Leads": ["collar", "leash", "lead", "harness"],
-    "Pet Beds": ["bed", "sleep", "sleeping", "mattress"],
-    "Pet Grooming": ["groom", "grooming", "shampoo", "brush", "comb"],
-    "Pet Health": ["health", "medicine", "medication", "vitamin", "supplement", "flea", "tick"],
-    "Pet Toys": ["toy", "play", "chew", "ball", "interactive toy"],
-    "Small Animals": ["rabbit", "hamster", "guinea pig", "small animal", "bunny"],
+PET_PATTERNS = {
+    "cat": ["cat", "kitten", "biral", "বিড়াল", "বিড়াল", "feline"],
+    "dog": ["dog", "puppy", "kukur", "কুকুর", "canine"],
+    "bird": ["bird", "parrot", "pakhi", "পাখি", "avian"],
+    "fish": ["fish", "mach", "মাছ", "aquarium"],
+    "rabbit": ["rabbit", "bunny", "khorgosh", "খরগোশ"],
 }
 
-PET_TERMS = {
-    "kitten": ("cat", "kitten"),
-    "cat": ("cat", None),
-    "feline": ("cat", None),
-    "puppy": ("dog", "puppy"),
-    "dog": ("dog", None),
-    "canine": ("dog", None),
-    "bird": ("bird", None),
-    "parrot": ("bird", None),
-    "fish": ("fish", None),
-    "aquarium": ("fish", None),
-    "rabbit": ("small-animal", None),
-    "hamster": ("small-animal", None),
-    "guinea": ("small-animal", None),
-    "small animal": ("small-animal", None),
+AGE_PATTERNS = {
+    "kitten": ["kitten", "baby cat"],
+    "puppy": ["puppy", "baby dog"],
+    "adult": ["adult", "grown"],
+    "senior": ["senior", "old"],
 }
 
-LOCATIONS = [
-    "Dhaka",
-    "Mirpur",
-    "Dhanmondi",
-    "Uttara",
-    "Banani",
-    "Gulshan",
-    "Bashundhara",
-    "Mohammadpur",
-    "Savar",
-    "Gazipur",
-    "Chattogram",
-    "Sylhet",
-    "Khulna",
-    "Rajshahi",
-]
+CATEGORY_PATTERNS = {
+    "dog-food": ["dog food", "puppy food"],
+    "cat-food": ["cat food", "kitten food"],
+    "bird-supplies": ["bird food", "bird seed", "bird cage", "parrot"],
+    "fish-aquatics": ["fish food", "aquarium", "fish tank", "filter"],
+    "pet-grooming": ["shampoo", "groom", "brush", "comb", "clipper"],
+    "pet-health": ["medicine", "med", "fever", "vitamin", "health", "supplement", "flea", "tick"],
+    "pet-toys": ["toy", "ball", "play", "chew"],
+    "collars-leads": ["collar", "leash", "harness"],
+    "pet-beds": ["bed", "mat", "sleep"],
+    "small-animals": ["hamster", "rabbit", "guinea pig", "small animal"],
+    "food": ["food", "meal", "feed", "খাবার", "kibble"],
+}
 
-KNOWN_BRANDS = [
-    "Royal Canin",
-    "Pedigree",
-    "Whiskas",
-    "Purina",
-    "Orijen",
-    "Acana",
-    "Me-O",
-    "Drools",
+BRANDS = [
+    "royal canin",
+    "pedigree",
+    "whiskas",
+    "purina",
+    "orijen",
+    "acana",
+    "me-o",
+    "drools",
+    "frontline",
+    "beaphar",
 ]
 
 STOPWORDS = {
-    "i",
-    "need",
-    "good",
-    "for",
-    "my",
-    "a",
-    "an",
-    "the",
-    "in",
-    "at",
-    "to",
-    "of",
-    "and",
-    "under",
-    "below",
-    "less",
-    "than",
-    "within",
-    "budget",
-    "above",
-    "more",
-    "over",
-    "bdt",
-    "tk",
-    "taka",
-    "product",
-    "products",
-    "please",
-    "show",
-    "me",
-    "want",
-    "looking",
+    "i", "need", "for", "my", "good", "best", "cheap", "under", "over", "within",
+    "ami", "amar", "jonno", "chai", "valo", "bhalo", "moddhe", "takar", "er", "anything",
 }
 
-TYPO_MAP = {
-    "kitn": "kitten",
-    "fud": "food",
-    "shampu": "shampoo",
-    "medecine": "medicine",
-    "leed": "lead",
-    "collor": "collar",
+LOCATION_PATTERNS = {
+    "Dhaka": ["dhaka"],
+    "Chattogram": ["chattogram", "chittagong"],
+    "Sylhet": ["sylhet"],
+    "Rajshahi": ["rajshahi"],
+    "Khulna": ["khulna"],
+    "Barishal": ["barishal", "barisal"],
+    "Rangpur": ["rangpur"],
+    "Mymensingh": ["mymensingh"],
+    "Gazipur": ["gazipur"],
+    "Narayanganj": ["narayanganj"],
+    "Mirpur": ["mirpur"],
+    "Uttara": ["uttara"],
+    "Dhanmondi": ["dhanmondi"],
+    "Banani": ["banani"],
+    "Gulshan": ["gulshan"],
+    "Mohammadpur": ["mohammadpur", "mohammedpur"],
+}
+
+BREED_PATTERNS = {
+    "Persian": ["persian"],
+    "Labrador": ["labrador"],
+    "German Shepherd": ["german shepherd", "gsd"],
+    "Siamese": ["siamese"],
 }
 
 
-def _normalize_query(text: str) -> str:
-    q = text.lower().strip()
-    q = q.replace("৳", " bdt ")
-    q = re.sub(r"[^a-z0-9\s\-,.]", " ", q)
-    q = re.sub(r"\s+", " ", q).strip()
-    return q
+def _normalize(text: str) -> str:
+    t = text.lower().strip()
+    t = t.replace("৳", " bdt ").replace("taka", " bdt ").replace("tk", " bdt ")
+    bn_digits = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
+    t = t.translate(bn_digits)
+    t = re.sub(r"\s+", " ", t)
+    return t
 
 
-def _extract_price(patterns: list[str], text: str) -> Optional[float]:
+def _extract_price_min(text: str) -> Optional[float]:
+    patterns = [
+        r"(?:over|above|more than)\s*(\d+[\d,]*)",
+    ]
     for p in patterns:
-        match = re.search(p, text, flags=re.IGNORECASE)
-        if match:
-            raw = match.group(1).replace(",", "")
-            try:
-                return float(raw)
-            except ValueError:
-                continue
+        m = re.search(p, text)
+        if m:
+            return float(m.group(1).replace(",", ""))
     return None
 
 
-def _fuzzy_fix_tokens(query: str) -> str:
-    tokens = query.split()
-    vocab = set()
-    for terms in CATEGORY_KEYWORDS.values():
-        for term in terms:
-            vocab.update(term.split())
-    vocab.update(PET_TERMS.keys())
-    vocab.update(["food", "medicine", "shampoo", "collar", "leash", "toy", "bed"])
+def _extract_price_max(text: str) -> Optional[float]:
+    patterns = [
+        r"(?:under|below|within|less than)\s*(\d+[\d,]*)",
+        r"(\d+[\d,]*)\s*bdt",
+        r"(\d+[\d,]*)\s*takar\s*moddhe",
+        r"(\d+[\d,]*)\s*টাকা",
+    ]
+    for p in patterns:
+        m = re.search(p, text)
+        if m:
+            return float(m.group(1).replace(",", ""))
+    return None
 
-    fixed: list[str] = []
+
+def _detect_map(text: str, mapping: dict[str, list[str]]) -> Optional[str]:
+    for key, terms in mapping.items():
+        if any(term in text for term in terms):
+            return key
+    return None
+
+
+def _extract_brand(text: str) -> Optional[str]:
+    for brand in BRANDS:
+        if brand in text:
+            return brand.title()
+    return None
+
+
+def _extract_location(text: str) -> Optional[str]:
+    for canonical, patterns in LOCATION_PATTERNS.items():
+        if any(p in text for p in patterns):
+            return canonical
+    return None
+
+
+def _extract_breed(text: str) -> Optional[str]:
+    for breed, patterns in BREED_PATTERNS.items():
+        if any(p in text for p in patterns):
+            return breed
+    return None
+
+
+def _extract_keywords(text: str) -> list[str]:
+    tokens = re.findall(r"[a-zA-Z]+", text)
+    out: list[str] = []
     for token in tokens:
-        if token in TYPO_MAP:
-            fixed.append(TYPO_MAP[token])
+        tl = token.lower()
+        if tl in STOPWORDS or len(tl) < 3:
             continue
-        if len(token) <= 2 or token.isdigit():
-            fixed.append(token)
-            continue
-        if token in vocab:
-            fixed.append(token)
-            continue
-        close = get_close_matches(token, list(vocab), n=1, cutoff=0.86)
-        fixed.append(close[0] if close else token)
-    return " ".join(fixed)
-
-
-def _detect_pet_type(normalized_query: str) -> tuple[Optional[str], Optional[str]]:
-    for term, (pet_type, age_group) in PET_TERMS.items():
-        if term in normalized_query:
-            return pet_type, age_group
-    return None, None
-
-
-def _detect_category(normalized_query: str, pet_type: Optional[str]) -> Optional[str]:
-    for category, terms in CATEGORY_KEYWORDS.items():
-        if any(term in normalized_query for term in terms):
-            return category
-
-    if "food" in normalized_query or "meal" in normalized_query:
-        if pet_type == "cat":
-            return "Cat Food"
-        if pet_type == "dog":
-            return "Dog Food"
-
-    semantic_category = infer_category_semantic(normalized_query)
-    return semantic_category
-
-
-def _detect_location(normalized_query: str) -> Optional[str]:
-    for location in LOCATIONS:
-        if location.lower() in normalized_query:
-            return location
-    return None
-
-
-def _detect_brand(raw_query: str) -> Optional[str]:
-    for brand in KNOWN_BRANDS:
-        if brand.lower() in raw_query.lower():
-            return brand
-    return None
+        if tl not in out:
+            out.append(tl)
+    return out[:10]
 
 
 def parse_query(query: str) -> dict:
-    original_query = query.strip()
-    normalized = _normalize_query(original_query)
-    corrected_query = _fuzzy_fix_tokens(normalized)
+    norm = _normalize(query)
 
-    pet_type, age_group = _detect_pet_type(corrected_query)
-    category = _detect_category(corrected_query, pet_type)
+    model, vectorizer = loader.search_bundle()
+    intent = "product_search"
+    confidence = 0.0
+    if vectorizer is not None and model is not None:
+        vec = vectorizer.transform([norm])
+        intent = model.predict(vec)[0]
+        if hasattr(model, "predict_proba"):
+            proba = model.predict_proba(vec)[0]
+            confidence = float(max(proba))
 
-    max_price = _extract_price(
-        [
-            r"(?:under|below|less than|within|budget)\s*(\d+[\d,]*)",
-            r"(?:bdt|tk|taka)\s*(\d+[\d,]*)",
-            r"(\d+[\d,]*)\s*(?:bdt|tk|taka)",
-        ],
-        corrected_query,
-    )
-    min_price = _extract_price(
-        [
-            r"(?:above|more than|over)\s*(\d+[\d,]*)",
-        ],
-        corrected_query,
-    )
-
-    location = _detect_location(corrected_query)
-    brand = _detect_brand(original_query)
-
-    tokens = re.findall(r"[a-z]+", corrected_query)
-    keywords = [token for token in tokens if token not in STOPWORDS and len(token) > 2]
-
-    normalized_pet_type = "small_animal" if pet_type == "small-animal" else pet_type
-    rec_pet_type = "small-animal" if normalized_pet_type == "small_animal" else normalized_pet_type
+    pet_type = _detect_map(norm, PET_PATTERNS)
+    age_group = _detect_map(norm, AGE_PATTERNS)
+    category = _detect_map(norm, CATEGORY_PATTERNS)
+    brand = _extract_brand(norm)
+    location = _extract_location(norm)
+    breed = _extract_breed(norm)
+    price_min = _extract_price_min(norm)
+    price_max = _extract_price_max(norm)
+    keywords = _extract_keywords(norm)
 
     return {
-        "success": True,
-        "query": original_query,
-        "intent": "product_search",
-        "pet_type": normalized_pet_type,
+        "intent": intent,
+        "pet_type": pet_type,
         "age_group": age_group,
         "category": category,
-        "max_price": max_price,
-        "min_price": min_price,
-        "location": location,
         "brand": brand,
-        "keywords": keywords[:12],
-        "recommended_categories": recommend_categories(rec_pet_type, category),
+        "location": location,
+        "breed": breed,
+        "price_min": price_min,
+        "price_max": price_max,
+        "keywords": keywords,
+        "confidence": round(confidence, 4),
     }

@@ -94,7 +94,17 @@ export interface Product {
   stock_quantity: number
   is_available: boolean
   primary_image: string | null
+  image_url?: string | null
+  thumbnail_url?: string | null
+  images?: string[]
   location: string | null
+  pet_type?: string | null
+  age_group?: string | null
+  tags?: string[]
+  sub_category?: string | null
+  category_type?: string | null
+  rating?: number
+  review_count?: number
   category: Category
   created_at: string
 }
@@ -112,7 +122,10 @@ export interface ProductFilters {
   min_price?: number | null
   max_price?: number | null
   location?: string
+  pet_type?: string | null
+  age_group?: string | null
   sort?: 'newest' | 'oldest' | 'price_asc' | 'price_desc'
+    | 'rating'
   per_page?: number
   page?: number
 }

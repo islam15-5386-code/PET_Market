@@ -7,19 +7,24 @@ import { ShoppingCart, MapPin, Package } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useAuth } from '@/context/AuthContext'
 import { useCart } from '@/hooks/useCart'
+import { formatBDT } from '@/lib/currency'
 import type { Product } from '@/types'
 
 interface ProductCardProps {
   product: Product
 }
 
+const FALLBACK_IMAGE = '/placeholder-product.png'
+
 export function ProductCard({ product }: ProductCardProps) {
   const { isAuthenticated } = useAuth()
   const { add } = useCart()
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
+  const firstImageFromArray = Array.isArray(product.images) ? product.images[0] : null
+  const categoryFallback = product.category?.image_url || null
   const [imgSrc, setImgSrc] = useState<string | null>(
-    product.primary_image || product.category?.image_url || null,
+    product.image_url || product.primary_image || firstImageFromArray || categoryFallback || FALLBACK_IMAGE,
   )
   const [triedCategoryFallback, setTriedCategoryFallback] = useState(false)
 
@@ -61,12 +66,16 @@ export function ProductCard({ product }: ProductCardProps) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             onError={() => {
               // 1) Try category image once, 2) then show icon fallback
-              if (!triedCategoryFallback && product.category?.image_url) {
+              if (
+                !triedCategoryFallback &&
+                categoryFallback &&
+                imgSrc !== categoryFallback
+              ) {
                 setTriedCategoryFallback(true)
-                setImgSrc(product.category.image_url)
+                setImgSrc(categoryFallback)
                 return
               }
-              setImgSrc(null)
+              setImgSrc(FALLBACK_IMAGE)
             }}
           />
         ) : (
@@ -106,7 +115,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="mt-auto flex items-center justify-between pt-2">
           <span className="text-base font-bold text-gray-900">
-            ৳{Number(product.price).toLocaleString()}
+            {formatBDT(product.price)}
           </span>
 
           <button

@@ -9,6 +9,12 @@ const nextConfig = {
         pathname: '/storage/**',
       },
       {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '8000',
+        pathname: '/storage/**',
+      },
+      {
         protocol: 'https',
         hostname: 'api.petmarketplace.com',
         pathname: '/storage/**',
@@ -16,6 +22,16 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
         pathname: '/**',
       },
     ],

@@ -226,6 +226,9 @@ class ProductManagementController extends Controller
         }
 
         $aiBaseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL', 'http://127.0.0.1:8001')), '/');
+        if (app()->runningUnitTests()) {
+            $aiBaseUrl = 'http://127.0.0.1:8001';
+        }
 
         try {
             $aiResponse = Http::timeout(20)->post("{$aiBaseUrl}/api/ai/generate-description", $compact);

@@ -11,6 +11,10 @@ router = APIRouter(prefix="/ai", tags=["AI Product Search"])
 def product_search(payload: ProductSearchRequest):
     try:
         parsed = parse_query(payload.query)
+        parsed["min_price"] = parsed.get("price_min")
+        parsed["max_price"] = parsed.get("price_max")
+        parsed["success"] = True
+        parsed["query"] = payload.query
         return ProductSearchAIResponse(**parsed)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"AI parsing failed: {exc}")

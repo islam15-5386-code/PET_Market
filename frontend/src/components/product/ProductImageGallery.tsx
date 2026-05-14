@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight, Package } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { clsx } from 'clsx'
 
 interface ProductImageGalleryProps {
@@ -11,33 +11,28 @@ interface ProductImageGalleryProps {
 }
 
 export function ProductImageGallery({ images, productName }: ProductImageGalleryProps) {
+  const normalized = images.length ? images : ['/placeholder-product.png']
   const [activeIndex, setActiveIndex] = useState(0)
+  const [broken, setBroken] = useState<Record<number, boolean>>({})
 
-  if (images.length === 0) {
-    return (
-      <div className="aspect-square w-full rounded-2xl bg-gray-100 flex items-center justify-center">
-        <Package className="h-24 w-24 text-gray-300" />
-      </div>
-    )
-  }
-
-  const prev = () => setActiveIndex((i) => (i === 0 ? images.length - 1 : i - 1))
-  const next = () => setActiveIndex((i) => (i === images.length - 1 ? 0 : i + 1))
+  const prev = () => setActiveIndex((i) => (i === 0 ? normalized.length - 1 : i - 1))
+  const next = () => setActiveIndex((i) => (i === normalized.length - 1 ? 0 : i + 1))
 
   return (
     <div className="flex flex-col gap-3">
       {/* Main image */}
       <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-gray-100 group">
         <Image
-          src={images[activeIndex]}
+          src={broken[activeIndex] ? '/placeholder-product.png' : normalized[activeIndex]}
           alt={`${productName} — image ${activeIndex + 1}`}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 50vw"
           priority
+          onError={() => setBroken((b) => ({ ...b, [activeIndex]: true }))}
         />
 
-        {images.length > 1 && (
+        {normalized.length > 1 && (
           <>
             <button
               onClick={prev}
@@ -56,7 +51,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
 
             {/* Dots */}
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {images.map((_, i) => (
+              {normalized.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveIndex(i)}
@@ -73,9 +68,9 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
       </div>
 
       {/* Thumbnail strip */}
-      {images.length > 1 && (
+      {normalized.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {images.map((src, i) => (
+          {normalized.map((src, i) => (
             <button
               key={i}
               onClick={() => setActiveIndex(i)}
@@ -87,11 +82,12 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
               )}
             >
               <Image
-                src={src}
+                src={broken[i] ? '/placeholder-product.png' : src}
                 alt={`Thumbnail ${i + 1}`}
                 fill
                 className="object-cover"
                 sizes="64px"
+                onError={() => setBroken((b) => ({ ...b, [i]: true }))}
               />
             </button>
           ))}

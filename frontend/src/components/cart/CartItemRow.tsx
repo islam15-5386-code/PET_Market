@@ -14,6 +14,7 @@ interface CartItemRowProps {
 }
 
 export function CartItemRow({ item, onUpdate, onRemove, disabled }: CartItemRowProps) {
+  const fallbackImage = '/placeholder-product.png'
   return (
     <div className="flex gap-4 py-5 border-b border-gray-100 last:border-0">
       {/* Image */}
@@ -25,6 +26,10 @@ export function CartItemRow({ item, onUpdate, onRemove, disabled }: CartItemRowP
             fill
             className="object-cover"
             sizes="80px"
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement
+              target.src = fallbackImage
+            }}
           />
         ) : (
           <div className="h-full flex items-center justify-center">

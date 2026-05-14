@@ -6,9 +6,11 @@ use App\Http\Controllers\Api\Admin\OrderManagementController;
 use App\Http\Controllers\Api\Admin\ProductManagementController;
 use App\Http\Controllers\Api\Admin\UserManagementController;
 use App\Http\Controllers\Api\AIController;
+use App\Http\Controllers\Api\AiProductDescriptionController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\SocialAuthController;
 use App\Http\Controllers\Api\Cart\CartController;
+use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\Order\OrderController;
 use App\Http\Controllers\Api\Product\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
@@ -47,6 +49,14 @@ Route::get('categories',      [CategoryController::class, 'index'])->name('categ
 Route::get('products',        [ProductController::class, 'index'])->name('products.index');
 Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
 Route::post('ai/product-search', [AIController::class, 'productSearch'])->name('ai.product-search');
+Route::post('ai-search', [AIController::class, 'productSearch'])->name('ai.search');
+Route::post('ai/semantic-search', [AIController::class, 'productSearch'])->name('ai.semantic-search');
+Route::middleware(['auth.jwt', 'throttle:20,1'])
+    ->post('ai/product-description/generate', [AiProductDescriptionController::class, 'generate'])
+    ->name('ai.product-description.generate');
+Route::post('chatbot/message', [ChatbotController::class, 'message'])
+    ->middleware('throttle:30,1')
+    ->name('chatbot.message');
 
 // ── Authenticated Routes ──────────────────────────────────────────────────────
 Route::middleware('auth.jwt')->group(function () {

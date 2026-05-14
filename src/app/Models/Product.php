@@ -13,8 +13,12 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'name', 'slug', 'description',
-        'price', 'stock_quantity', 'images', 'location', 'is_available',
+        'price', 'stock_quantity', 'images', 'image_url', 'thumbnail_url', 'location', 'is_available',
         'brand', 'sku', 'rating', 'review_count',
+        'pet_type', 'sub_category',
+        'ai_generated_title', 'ai_generated_short_description', 'ai_generated_long_description',
+        'ai_seo_keywords', 'ai_meta_title', 'ai_meta_description',
+        'ai_generated_tags', 'ai_content_generated_at',
     ];
 
     protected $casts = [
@@ -22,6 +26,9 @@ class Product extends Model
         'price'        => 'decimal:2',
         'is_available' => 'boolean',
         'rating'       => 'decimal:2',
+        'ai_seo_keywords' => 'array',
+        'ai_generated_tags' => 'array',
+        'ai_content_generated_at' => 'datetime',
     ];
 
     public function category()

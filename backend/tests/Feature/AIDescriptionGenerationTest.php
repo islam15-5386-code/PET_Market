@@ -33,12 +33,21 @@ class AIDescriptionGenerationTest extends TestCase
     public function test_admin_can_generate_and_reuse_cached_description(): void
     {
         Http::fake([
-            'http://127.0.0.1:8001/api/ai/generate-description' => Http::response([
-                'source' => 'ai_model',
-                'title' => 'Premium Kitten Dry Food by Meow Mix',
-                'description' => 'Balanced kitten nutrition with protein-rich formula for healthy daily growth and easy digestion.',
+            'http://127.0.0.1:8001/ai/product-description/generate' => Http::response([
+                'professional_product_title' => 'Premium Kitten Dry Food by Meow Mix',
+                'short_description' => 'Balanced kitten nutrition with protein-rich formula for healthy daily growth and easy digestion.',
+                'long_description' => 'Balanced kitten nutrition with protein-rich formula for healthy daily growth and easy digestion.',
                 'seo_keywords' => ['kitten dry food', 'cat food bangladesh', 'meow mix kitten', 'high protein cat food', 'kitten nutrition'],
                 'benefits' => ['Supports healthy growth', 'Easy to digest', 'Protein-rich daily nutrition'],
+                'care_instruction' => 'Store in a cool dry place',
+                'usage_instruction' => 'Serve by weight',
+                'safety_warning' => 'Consult a veterinarian for medical concerns.',
+                'meta_title' => 'Premium Kitten Dry Food by Meow Mix',
+                'meta_description' => 'Balanced kitten nutrition with protein-rich formula for healthy daily growth and easy digestion.',
+                'suggested_tags' => ['cat', 'kitten', 'food'],
+                'provider_name' => 'openai',
+                'model_name' => 'gpt-4o-mini',
+                'token_usage' => ['prompt_tokens' => 0, 'completion_tokens' => 0, 'total_tokens' => 0],
             ], 200),
         ]);
 
@@ -82,4 +91,3 @@ class AIDescriptionGenerationTest extends TestCase
         Http::assertSentCount(1);
     }
 }
-

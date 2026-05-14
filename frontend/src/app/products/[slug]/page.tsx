@@ -20,6 +20,7 @@ import { useProduct } from '@/hooks/useProduct'
 import { useProducts } from '@/hooks/useProducts'
 import { useAuth } from '@/context/AuthContext'
 import { useCart } from '@/hooks/useCart'
+import { formatBDT } from '@/lib/currency'
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -138,7 +139,7 @@ export default function ProductDetailPage() {
 
           <div className="flex items-baseline gap-3">
             <span className="text-3xl font-extrabold text-gray-900">
-              ৳{Number(product.price).toLocaleString()}
+              {formatBDT(product.price)}
             </span>
           </div>
 

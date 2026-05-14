@@ -4,8 +4,10 @@
 
 @layer base {
   :root {
-    --brand: #e8701a;
-    --brand-dark: #c2510b;
+    --brand: #f97316;
+    --brand-dark: #c2410c;
+    --ink: #111827;
+    --surface: #ffffff;
   }
 
   * {
@@ -17,24 +19,49 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply text-gray-900 antialiased;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(255, 237, 213, 0.65), transparent 35%),
+      radial-gradient(circle at 100% 30%, rgba(254, 243, 199, 0.6), transparent 30%),
+      linear-gradient(180deg, #fffdf9 0%, #f8fafc 65%, #f3f4f6 100%);
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    @apply outline-none;
   }
 }
 
 @layer components {
-  /* Auth card wrapper used across all auth pages */
   .auth-card {
-    @apply w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8;
+    @apply w-full max-w-md mx-auto bg-white/95 backdrop-blur rounded-2xl shadow-xl border border-orange-100 p-8;
   }
 
-  /* Branded link */
   .link-brand {
     @apply text-orange-600 hover:text-orange-700 font-medium transition-colors;
+  }
+
+  .surface-card {
+    @apply rounded-2xl border border-gray-200/80 bg-white/95 shadow-sm;
+  }
+
+  .section-shell {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .glow-orange {
+    box-shadow: 0 14px 35px -14px rgba(249, 115, 22, 0.45);
+  }
+
+  .ring-brand {
+    @apply ring-2 ring-orange-300 ring-offset-2 ring-offset-white;
   }
 }

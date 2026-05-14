@@ -1,22 +1,31 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from schemas.chatbot_schema import ChatbotRequest, ChatbotResponse
 from services.chatbot_service import run_chatbot
+from services.model_trainer import train_chatbot_model
+from services.model_version_logger import log_model_version
 
-router = APIRouter(prefix="/ai", tags=["Pet Chatbot"])
+router = APIRouter(tags=['Pet Chatbot'])
 
 
-@router.post("/pet-chatbot", response_model=ChatbotResponse)
-def pet_chatbot(payload: ChatbotRequest):
-    result = run_chatbot(
-        message=payload.message,
-        pet_type=payload.pet_type,
-        locale=payload.locale,
-    )
-    if not result.get("success"):
-        message = result.get("message", "Chatbot request failed.")
-        status_code = 500
-        if "OPENAI_API_KEY is missing" in message:
-            status_code = 503
-        raise HTTPException(status_code=status_code, detail=message)
-    return ChatbotResponse(**result)
+@router.post('/chatbot/message', response_model=ChatbotResponse)
+def chatbot_message(payload: ChatbotRequest):
+    return run_chatbot(payload)
+
+
+@router.post('/chatbot/train')
+def chatbot_train():
+    result = train_chatbot_model()
+    result['model_version_logged'] = log_model_version(result, status='trained')
+    return result
+
+
+@router.get('/chatbot/health')
+def chatbot_health():
+    return {'status': 'ok', 'service': 'pet-chatbot'}
+
+
+# Backward compat
+@router.post('/ai/pet-chatbot', response_model=ChatbotResponse)
+def chatbot_message_legacy(payload: ChatbotRequest):
+    return run_chatbot(payload)

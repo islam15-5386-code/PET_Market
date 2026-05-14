@@ -5,7 +5,8 @@ export const TOKEN_KEY = 'pm_token'
 
 function resolveApiBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL
+    // Prefer IPv4 loopback in local dev to avoid localhost/IPv6 resolution mismatches.
+    return process.env.NEXT_PUBLIC_API_URL.replace('://localhost:', '://127.0.0.1:')
   }
 
   if (typeof window !== 'undefined') {

@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 
@@ -21,7 +22,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Account created successfully.',
             'data'    => [
-                'user'  => $result['user'],
+                'user'  => new UserResource($result['user']),
                 'token' => $this->authService->tokenResponse($result['token']),
             ],
         ], 201);
@@ -35,7 +36,7 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Login successful.',
                 'data'    => [
-                    'user'  => $result['user'],
+                    'user'  => new UserResource($result['user']),
                     'token' => $this->authService->tokenResponse($result['token']),
                 ],
             ]);
@@ -61,7 +62,7 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Token refreshed.',
                 'data'    => [
-                    'user'  => $result['user'],
+                    'user'  => new UserResource($result['user']),
                     'token' => $this->authService->tokenResponse($result['token']),
                 ],
             ]);
@@ -74,7 +75,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => ['user' => auth('api')->user()],
+            'data'    => ['user' => new UserResource(auth('api')->user())],
         ]);
     }
 

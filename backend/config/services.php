@@ -50,6 +50,8 @@ return [
 
     'ai_service' => [
         'url' => env('AI_SERVICE_URL', 'http://127.0.0.1:8001'),
+        'description_timeout' => env('AI_DESCRIPTION_TIMEOUT', 30),
+        'chatbot_timeout' => env('AI_CHATBOT_TIMEOUT', 30),
     ],
 
 ];

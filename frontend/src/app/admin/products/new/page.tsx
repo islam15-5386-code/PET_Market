@@ -6,13 +6,22 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { ProductForm } from '@/components/admin/ProductForm'
 import { Alert } from '@/components/ui/Alert'
-import { createProduct, type ProductFormInput } from '@/lib/admin/products'
+import {
+  createProduct,
+  generateProductDescription,
+  type AIDescriptionGenerateInput,
+  type AIGeneratedDescription,
+  type ProductFormInput,
+} from '@/lib/admin/products'
 import { getErrorMessage } from '@/lib/api'
 
 export default function NewProductPage() {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [error, setError] = useState('')
+  const [generated, setGenerated] = useState<AIGeneratedDescription | null>(null)
+  const [generateError, setGenerateError] = useState('')
 
   async function handleSubmit(data: ProductFormInput) {
     setSubmitting(true)
@@ -24,6 +33,21 @@ export default function NewProductPage() {
       setError(getErrorMessage(err))
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  async function handleGenerateDescription(input: AIDescriptionGenerateInput) {
+    setGenerating(true)
+    setGenerateError('')
+    try {
+      const ai = await generateProductDescription(input)
+      setGenerated(ai)
+      return ai
+    } catch (err) {
+      setGenerateError(getErrorMessage(err))
+      throw err
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -43,7 +67,11 @@ export default function NewProductPage() {
       <div className="bg-white rounded-2xl border border-gray-200 p-6">
         <ProductForm
           onSubmit={handleSubmit}
+          onGenerateDescription={handleGenerateDescription}
           submitting={submitting}
+          generating={generating}
+          generated={generated}
+          generateError={generateError}
           submitLabel="Create Product"
         />
       </div>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="1">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <mxCell id="title" value="PetMarket — AI Flow Sequence Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1a1a2e;" vertex="1" parent="1">
+      <mxGeometry x="300" y="20" width="900" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_ui" value="🖥️ Next.js UI&#xa;:3000" style="shape=mxgraph.flowchart.start_2;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="100" y="80" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_laravel" value="⚙️ Laravel&#xa;:8000" style="shape=mxgraph.flowchart.start_2;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="420" y="80" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_fastapi" value="🤖 FastAPI&#xa;:8001" style="shape=mxgraph.flowchart.start_2;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="740" y="80" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_db" value="🗄️ PostgreSQL&#xa;:5432" style="shape=mxgraph.flowchart.start_2;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="80" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="ll_ui" style="edgeStyle=none;strokeColor=#6c8ebf;strokeWidth=1;dashed=1;endArrow=none;" edge="1" parent="1">
+      <mxGeometry x="160" y="140" width="1" height="950" relative="0" as="geometry">
+        <mxPoint x="160" y="140" as="sourcePoint" />
+        <mxPoint x="160" y="1090" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ll_laravel" style="edgeStyle=none;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" edge="1" parent="1">
+      <mxGeometry x="480" y="140" width="1" height="950" relative="0" as="geometry">
+        <mxPoint x="480" y="140" as="sourcePoint" />
+        <mxPoint x="480" y="1090" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ll_fastapi" style="edgeStyle=none;strokeColor=#d79b00;strokeWidth=1;dashed=1;endArrow=none;" edge="1" parent="1">
+      <mxGeometry x="800" y="140" width="1" height="950" relative="0" as="geometry">
+        <mxPoint x="800" y="140" as="sourcePoint" />
+        <mxPoint x="800" y="1090" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ll_db" style="edgeStyle=none;strokeColor=#b85450;strokeWidth=1;dashed=1;endArrow=none;" edge="1" parent="1">
+      <mxGeometry x="1120" y="140" width="1" height="950" relative="0" as="geometry">
+        <mxPoint x="1120" y="140" as="sourcePoint" />
+        <mxPoint x="1120" y="1090" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="flow1_label" value="① AI Product Search Flow" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="60" y="160" width="1200" height="30" as="geometry" />
+    </mxCell>
+
+    <mxCell id="s1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="160" y="210" as="sourcePoint" />
+        <mxPoint x="480" y="210" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="s1_lbl" value="POST /api/ai-search&#xa;{query: &quot;cat food&quot;}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#6c8ebf;" vertex="1" connectable="0" parent="s1">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="s2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="240" as="sourcePoint" />
+        <mxPoint x="800" y="240" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="s2_lbl" value="POST /ai/product-search&#xa;{query: &quot;cat food&quot;}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#d79b00;" vertex="1" connectable="0" parent="s2">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="s3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="800" y="270" as="sourcePoint" />
+        <mxPoint x="480" y="270" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="s3_lbl" value="{intent:&quot;product_search&quot;, pet_type:&quot;cat&quot;, category:&quot;food&quot;, price_max:1000}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#d79b00;" vertex="1" connectable="0" parent="s3">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="s4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="300" as="sourcePoint" />
+        <mxPoint x="1120" y="300" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="s4_lbl" value="SELECT products (active) + category join + filter by AI filters + sort relevance/rating/stock" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#b85450;" vertex="1" connectable="0" parent="s4">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="s5" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1120" y="330" as="sourcePoint" />
+        <mxPoint x="480" y="330" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="s5_lbl" value="filtered products[]" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#b85450;" vertex="1" connectable="0" parent="s5">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="s6" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="360" as="sourcePoint" />
+        <mxPoint x="160" y="360" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="s6_lbl" value="{results: [...], total: N}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#6c8ebf;" vertex="1" connectable="0" parent="s6">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="flow2_label" value="② AI Chatbot Flow" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="60" y="400" width="1200" height="30" as="geometry" />
+    </mxCell>
+
+    <mxCell id="c1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="160" y="450" as="sourcePoint" />
+        <mxPoint x="480" y="450" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c1_lbl" value="POST /api/chatbot/message&#xa;{message: &quot;I need dog food&quot;}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#6c8ebf;" vertex="1" connectable="0" parent="c1">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="c2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="480" as="sourcePoint" />
+        <mxPoint x="800" y="480" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c2_lbl" value="POST /chatbot/message&#xa;{message: &quot;I need dog food&quot;}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#d79b00;" vertex="1" connectable="0" parent="c2">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="c3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="800" y="510" as="sourcePoint" />
+        <mxPoint x="480" y="510" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c3_lbl" value="{intent: &quot;food_advice&quot;, reply: &quot;...&quot;, safety_level:&quot;safe&quot;}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#d79b00;" vertex="1" connectable="0" parent="c3">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="c4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="540" as="sourcePoint" />
+        <mxPoint x="1120" y="540" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c4_lbl" value="SELECT recommendations FROM products + INSERT chatbot_sessions/messages/recommendations" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#b85450;" vertex="1" connectable="0" parent="c4">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="c5" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1120" y="570" as="sourcePoint" />
+        <mxPoint x="480" y="570" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c5_lbl" value="recommended products[]" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#b85450;" vertex="1" connectable="0" parent="c5">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="c6" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="600" as="sourcePoint" />
+        <mxPoint x="160" y="600" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c6_lbl" value="{reply: &quot;...&quot;, recommendations: [...]}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#6c8ebf;" vertex="1" connectable="0" parent="c6">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="flow3_label" value="③ AI Description Flow (Admin)" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="60" y="640" width="1200" height="30" as="geometry" />
+    </mxCell>
+
+    <mxCell id="d1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="160" y="690" as="sourcePoint" />
+        <mxPoint x="480" y="690" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="d1_lbl" value="POST /api/ai/product-description/generate&#xa;(Admin/Seller, auth + throttle; alt: /api/admin/products/{id}/generate-description)" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#6c8ebf;" vertex="1" connectable="0" parent="d1">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="d2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="720" as="sourcePoint" />
+        <mxPoint x="800" y="720" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="d2_lbl" value="POST /ai/product-description/generate&#xa;{product: {...}}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#d79b00;" vertex="1" connectable="0" parent="d2">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="d3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="800" y="750" as="sourcePoint" />
+        <mxPoint x="480" y="750" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="d3_lbl" value="{description: &quot;AI generated text...&quot;}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#d79b00;" vertex="1" connectable="0" parent="d3">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="d4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="780" as="sourcePoint" />
+        <mxPoint x="1120" y="780" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="d4_lbl" value="UPDATE products SET description = &quot;...&quot; WHERE id = :id" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#b85450;" vertex="1" connectable="0" parent="d4">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+    <mxCell id="d5" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="480" y="810" as="sourcePoint" />
+        <mxPoint x="160" y="810" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="d5_lbl" value="{success: true, description: &quot;...&quot;}" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontColor=#6c8ebf;" vertex="1" connectable="0" parent="d5">
+      <mxGeometry relative="0.5" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

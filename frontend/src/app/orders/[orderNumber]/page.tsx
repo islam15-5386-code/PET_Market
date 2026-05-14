@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useOrder } from '@/hooks/useOrders'
 
 export default function OrderDetailPage() {
+  const fallbackImage = '/placeholder-product.png'
   const params = useParams()
   const orderNumber = params.orderNumber as string
   const { order, loading, error, cancel, cancelling } = useOrder(orderNumber)
@@ -90,7 +91,17 @@ export default function OrderDetailPage() {
             <div key={item.id} className="flex items-center gap-4 px-5 py-4">
               <div className="relative h-14 w-14 shrink-0 rounded-xl overflow-hidden bg-gray-100">
                 {item.product_image ? (
-                  <Image src={item.product_image} alt={item.product_name} fill className="object-cover" sizes="56px" />
+                  <Image
+                    src={item.product_image}
+                    alt={item.product_name}
+                    fill
+                    className="object-cover"
+                    sizes="56px"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement
+                      target.src = fallbackImage
+                    }}
+                  />
                 ) : (
                   <div className="h-full flex items-center justify-center">
                     <Package className="h-6 w-6 text-gray-300" />

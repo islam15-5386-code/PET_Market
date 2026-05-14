@@ -1,51 +1,45 @@
 import Link from 'next/link'
+import { AIChip } from '@/components/ui/AIChip'
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-400 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-
-          {/* Brand */}
+    <footer className="mt-auto border-t border-gray-200 bg-[#111827] text-gray-300">
+      <div className="section-shell py-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <span className="text-2xl">🐾</span>
               <span className="text-lg font-bold text-white">Pet Marketplace</span>
             </div>
-            <p className="text-sm leading-relaxed">
-              Bangladesh&apos;s trusted marketplace for pet food, accessories, and health products.
-              Everything your pet needs, delivered to your door.
+            <p className="max-w-xl text-sm leading-relaxed text-gray-400">
+              AI-powered pet commerce platform for smarter product discovery, safer pet-care support, and faster seller workflows.
             </p>
+            <div className="mt-4"><AIChip label="AI Smart Search · AI Chatbot · AI Description" /></div>
           </div>
 
-          {/* Shop */}
           <div>
-            <h3 className="text-sm font-semibold text-white mb-3">Shop</h3>
+            <h3 className="mb-3 text-sm font-semibold text-white">Marketplace</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/products" className="hover:text-white transition-colors">All Products</Link></li>
-              <li><Link href="/products?category_id=1" className="hover:text-white transition-colors">Dog Food</Link></li>
-              <li><Link href="/products?category_id=2" className="hover:text-white transition-colors">Cat Food</Link></li>
               <li><Link href="/products?sort=newest" className="hover:text-white transition-colors">New Arrivals</Link></li>
+              <li><Link href="/products" className="hover:text-white transition-colors">AI Product Search</Link></li>
             </ul>
           </div>
 
-          {/* Account */}
           <div>
-            <h3 className="text-sm font-semibold text-white mb-3">Account</h3>
+            <h3 className="mb-3 text-sm font-semibold text-white">Account</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/login" className="hover:text-white transition-colors">Sign In</Link></li>
-              <li><Link href="/register" className="hover:text-white transition-colors">Register</Link></li>
+              <li><Link href="/register" className="hover:text-white transition-colors">Create Account</Link></li>
               <li><Link href="/orders" className="hover:text-white transition-colors">My Orders</Link></li>
-              <li><Link href="/profile" className="hover:text-white transition-colors">My Profile</Link></li>
+              <li><Link href="/profile" className="hover:text-white transition-colors">Profile</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs">
-            &copy; {new Date().getFullYear()} Pet Marketplace by Betopia Limited. All rights reserved.
-          </p>
-          <p className="text-xs">Made with ❤️ in Bangladesh</p>
+        <div className="mt-8 flex flex-col gap-2 border-t border-gray-800 pt-6 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} Pet Marketplace by Betopia Limited. All rights reserved.</p>
+          <p>Built for modern pet care in Bangladesh</p>
         </div>
       </div>
     </footer>

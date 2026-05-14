@@ -206,7 +206,11 @@ class ProductSeeder extends Seeder
                     'stock_quantity' => $p['stock'],
                     'location'       => $p['location'],
                     'is_available'   => true,
-                    'images'         => [],
+                    'image_url'      => $this->seedImageForCategory($p['category']),
+                    'images'         => [$this->seedImageForCategory($p['category'])],
+                    'pet_type'       => $this->petTypeForCategory($p['category']),
+                    'age_group'      => 'All Ages',
+                    'tags'           => [$p['category'], 'seeded'],
                 ]
             );
 
@@ -214,5 +218,33 @@ class ProductSeeder extends Seeder
         }
 
         $this->command->info("✅ {$created} products seeded.");
+    }
+
+    private function seedImageForCategory(string $categorySlug): string
+    {
+        return match ($categorySlug) {
+            'dog-food' => 'https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?auto=format&fit=crop&w=1200&q=80',
+            'cat-food' => 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80',
+            'bird-supplies' => 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=1200&q=80',
+            'fish-aquatics' => 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=1200&q=80',
+            'pet-grooming' => 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80',
+            'pet-health' => 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?auto=format&fit=crop&w=1200&q=80',
+            'pet-toys' => 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?auto=format&fit=crop&w=1200&q=80',
+            'collars-leads' => 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1200&q=80',
+            'pet-beds' => 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80',
+            default => 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=1200&q=80',
+        };
+    }
+
+    private function petTypeForCategory(string $categorySlug): string
+    {
+        return match ($categorySlug) {
+            'dog-food', 'collars-leads' => 'Dog',
+            'cat-food' => 'Cat',
+            'bird-supplies' => 'Bird',
+            'fish-aquatics' => 'Fish',
+            'small-animals' => 'Small Animal',
+            default => 'Mixed',
+        };
     }
 }

@@ -56,7 +56,7 @@ class ProductManagementService
         $data['slug']         = $this->generateUniqueSlug($data['name']);
         $data['sku']          = $data['sku'] ?? $this->generateUniqueSku($data['name']);
         $data['images']       = !empty($data['image_url']) ? [$data['image_url']] : [];
-        unset($data['image_url']);
+        $data['image_url']    = $data['images'][0] ?? null;
         $data['is_available'] = $data['is_available'] ?? true;
 
         return Product::create($data);
@@ -78,8 +78,10 @@ class ProductManagementService
             $images = $product->images ?? [];
             array_unshift($images, $data['image_url']);
             $data['images'] = array_values(array_unique($images));
+            $data['image_url'] = $data['images'][0] ?? $product->image_url;
+        } elseif (isset($data['images']) && is_array($data['images'])) {
+            $data['image_url'] = $data['images'][0] ?? null;
         }
-        unset($data['image_url']);
 
         $product->update($data);
 
@@ -121,7 +123,11 @@ class ProductManagementService
             $newPaths[] = $path;
         }
 
-        $product->update(['images' => array_merge($existing, $newPaths)]);
+        $merged = array_merge($existing, $newPaths);
+        $product->update([
+            'images' => $merged,
+            'image_url' => $merged[0] ?? $product->image_url,
+        ]);
 
         return $product->fresh('category');
     }
@@ -148,7 +154,11 @@ class ProductManagementService
 
         // Remove and re-index
         array_splice($images, $index, 1);
-        $product->update(['images' => array_values($images)]);
+        $images = array_values($images);
+        $product->update([
+            'images' => $images,
+            'image_url' => $images[0] ?? null,
+        ]);
 
         return $product->fresh('category');
     }

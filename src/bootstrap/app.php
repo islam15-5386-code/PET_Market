@@ -18,6 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         \App\Console\Commands\SeedMarketplaceProductsCommand::class,
         \App\Console\Commands\VerifyMarketplaceSeedCommand::class,
+        \App\Console\Commands\VerifyProductImagesCommand::class,
+        \App\Console\Commands\VerifyAiDetailsCommand::class,
+        \App\Console\Commands\BackfillProductEmbeddingsCommand::class,
+        \App\Console\Commands\BackfillProductImagesCommand::class,
+        \App\Console\Commands\MarketplaceVerifyCommand::class,
+        \App\Console\Commands\AiVerifyCommand::class,
+        \App\Console\Commands\GenerateAiDetailsForProductsCommand::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([

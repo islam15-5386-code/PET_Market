@@ -26,7 +26,10 @@ class CreateProductRequest extends FormRequest
             'sku'            => ['sometimes', 'nullable', 'string', 'max:80', 'unique:products,sku'],
             'rating'         => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:5'],
             'review_count'   => ['sometimes', 'nullable', 'integer', 'min:0'],
-            'image_url'      => ['sometimes', 'nullable', 'url', 'max:1024'],
+            'image_url'      => ['sometimes', 'nullable', 'string', 'max:1024'],
+            'thumbnail_url'  => ['sometimes', 'nullable', 'string', 'max:1024'],
+            'pet_type'       => ['sometimes', 'nullable', 'string', 'max:60'],
+            'sub_category'   => ['sometimes', 'nullable', 'string', 'max:120'],
             'is_available'   => ['sometimes', 'boolean'],
             'is_active'      => ['sometimes', 'boolean'],
         ];

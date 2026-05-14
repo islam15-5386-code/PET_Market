@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Category;
+use App\Services\ProductImageService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -10,6 +11,8 @@ use Throwable;
 
 class SeedMarketplaceProductsCommand extends Command
 {
+    private ProductImageService $imageService;
+
     protected $signature = 'seed:marketplace-products {--chunk=5000} {--fresh : Truncate products before seed}';
     protected $description = 'Seed 1,000,000 marketplace products with chunked bulk inserts';
 
@@ -36,6 +39,49 @@ class SeedMarketplaceProductsCommand extends Command
         'Purrfect', 'BarkPlus', 'Petmate', 'TailBliss', 'FurGlow', 'Zoofresh',
     ];
 
+    private const NAME_TEMPLATES = [
+        'dog-food' => [
+            'Puppy Chicken Kibble', 'Adult Dog Dry Food', 'Lamb & Rice Dog Meal',
+            'Grain Free Dog Kibble', 'Senior Dog Nutrition Formula', 'Beef Flavor Dog Food',
+        ],
+        'cat-food' => [
+            'Kitten Tuna Dry Food', 'Adult Cat Salmon Formula', 'Chicken Cat Kibble',
+            'Indoor Cat Hairball Control Food', 'Cat Wet Food Pouch', 'Kitten Growth Formula',
+        ],
+        'pet-health' => [
+            'Pet Multivitamin Tablets', 'Deworming Support for Pets', 'Skin & Coat Omega Drops',
+            'Digestive Probiotic Powder', 'Joint Care Supplement', 'Flea & Tick Control Spray',
+        ],
+        'pet-toys' => [
+            'Interactive Cat Teaser Toy', 'Dog Chew Rope Toy', 'Squeaky Ball Toy',
+            'Treat Dispensing Puzzle Toy', 'Rubber Chew Bone', 'Feather Wand Cat Toy',
+        ],
+        'pet-grooming' => [
+            'Anti-Shedding Grooming Brush', 'Pet Shampoo Gentle Formula', 'Nail Clipper for Pets',
+            'Pet Ear Cleaning Wipes', 'Detangling Comb for Pets', 'Pet Coat Conditioning Spray',
+        ],
+        'fish-aquatics' => [
+            'Aquarium Fish Food Flakes', 'Aquarium Internal Filter', 'Water Conditioner for Fish Tank',
+            'Aquarium Air Pump Kit', 'Fish Tank Decorative Pebbles', 'Aquarium Thermometer',
+        ],
+        'collars-leads' => [
+            'Adjustable Dog Collar', 'Reflective Pet Leash', 'No-Pull Harness for Dogs',
+            'Soft Nylon Cat Collar', 'Heavy Duty Dog Lead', 'ID Tag Collar Set',
+        ],
+        'pet-beds' => [
+            'Orthopedic Dog Bed', 'Washable Cat Sleeping Bed', 'Donut Calming Pet Bed',
+            'Waterproof Pet Mattress', 'Soft Plush Pet Cushion', 'Raised Cooling Pet Bed',
+        ],
+        'small-animals' => [
+            'Rabbit Pellet Food', 'Hamster Bedding Pack', 'Guinea Pig Hay Blend',
+            'Rabbit Chew Sticks', 'Small Animal Water Bottle', 'Hamster Tunnel Toy',
+        ],
+        'bird-supplies' => [
+            'Bird Seed Nutrition Mix', 'Parrot Feeding Bowl', 'Bird Cage Perch Set',
+            'Cuttlefish Bone for Birds', 'Canary Millet Spray', 'Bird Cage Swing Toy',
+        ],
+    ];
+
     private const PRICE_RANGE = [
         'dog-food' => [350, 6500],
         'cat-food' => [250, 5000],
@@ -51,7 +97,12 @@ class SeedMarketplaceProductsCommand extends Command
 
     public function handle(): int
     {
+        $this->imageService = app(ProductImageService::class);
         $chunkSize = max(10, min((int) $this->option('chunk'), 10000));
+        if (DB::getDriverName() === 'pgsql') {
+            // PostgreSQL bind parameter limit is 65535; products insert uses 15 fields/row.
+            $chunkSize = min($chunkSize, 4000);
+        }
         if (DB::getDriverName() === 'sqlite') {
             // SQLite has ~999 SQL variable limit; 15 fields/row => safe upper bound ~66 rows/batch.
             $chunkSize = min($chunkSize, 60);
@@ -124,6 +175,10 @@ class SeedMarketplaceProductsCommand extends Command
     {
         [$min, $max] = self::PRICE_RANGE[$categorySlug];
         $name = $this->generateName($categorySlug, $n);
+        $petType = $this->imageService->normalizePetType("{$categorySlug} {$name}");
+        $categoryType = $this->imageService->normalizeCategory($categorySlug);
+        $subCategory = $this->imageService->normalizeSubCategory($name);
+        $images = $this->imageService->getMultipleImages($petType, $categoryType, $subCategory, 3);
         $slug = Str::slug($name) . '-' . strtolower($prefix) . '-' . $n;
         $sku = "{$prefix}-" . str_pad((string) $n, 7, '0', STR_PAD_LEFT);
         $price = number_format(mt_rand($min * 100, $max * 100) / 100, 2, '.', '');
@@ -134,12 +189,16 @@ class SeedMarketplaceProductsCommand extends Command
 
         return [
             'category_id' => $categoryId,
+            'pet_type' => $petType ?: null,
+            'sub_category' => $subCategory ?: null,
             'name' => $name,
             'slug' => $slug,
             'description' => $this->generateDescription($categorySlug, $name),
             'price' => $price,
             'stock_quantity' => $stock,
-            'images' => json_encode([$this->categoryImage($categorySlug)]),
+            'images' => json_encode($images),
+            'image_url' => $images[0] ?? null,
+            'thumbnail_url' => $images[0] ?? null,
             'location' => self::LOCATIONS[array_rand(self::LOCATIONS)],
             'brand' => self::BRAND_POOL[array_rand(self::BRAND_POOL)],
             'sku' => $sku,
@@ -153,22 +212,27 @@ class SeedMarketplaceProductsCommand extends Command
 
     private function generateName(string $slug, int $n): string
     {
-        $packs = [1, 2, 5, 10, 12];
-        $kg = [1, 1.2, 2, 3, 5, 10];
-        $pack = $packs[$n % count($packs)];
-        $weight = $kg[$n % count($kg)];
+        $packs = [1, 2, 3, 5, 10, 12];
+        $kg = [0.5, 1, 1.5, 2, 3, 5, 10];
+        $ml = [100, 200, 250, 300, 500];
+        $sizes = ['XS', 'S', 'M', 'L', 'XL'];
+        $base = self::NAME_TEMPLATES[$slug][$n % count(self::NAME_TEMPLATES[$slug])];
 
         return match ($slug) {
-            'dog-food' => ['Premium Chicken Dog Food', 'Grain Free Puppy Food', 'Beef Flavor Adult Dog Meal'][$n % 3] . " {$weight}kg",
-            'cat-food' => ['Tuna Cat Food', 'Kitten Dry Food Chicken Flavor', 'Salmon Wet Cat Food Pack'][$n % 3] . " {$pack}pcs",
-            'pet-health' => ['Pet Vitamin Supplement', 'Flea & Tick Protection Spray', 'Digestive Care Drops for Pets'][$n % 3] . " {$pack}pcs",
-            'pet-toys' => ['Rubber Chew Toy', 'Interactive Cat Ball', 'Rope Toy for Dogs'][$n % 3] . " Model {$n}",
-            'pet-grooming' => ['Pet Grooming Brush', 'Anti-Shedding Comb', 'Pet Shampoo Mild Formula'][$n % 3] . " {$pack}pcs",
-            'fish-aquatics' => ['Aquarium Water Filter', 'Fish Food Flakes', 'Aquarium Decoration Stone'][$n % 3] . " {$pack}pcs",
-            'collars-leads' => ['Adjustable Dog Collar', 'Nylon Pet Leash', 'Reflective Collar for Pets'][$n % 3] . " Size " . ['S', 'M', 'L', 'XL'][$n % 4],
-            'pet-beds' => ['Soft Washable Pet Bed', 'Premium Cat Sleeping Bed', 'Waterproof Dog Mattress'][$n % 3] . " {$weight}ft",
-            'small-animals' => ['Rabbit Food Mix', 'Hamster Cage Accessory', 'Guinea Pig Hay Pack'][$n % 3] . " {$pack}pcs",
-            default => ['Bird Seed Mix', 'Parrot Feeding Bowl', 'Bird Cage Swing Toy'][$n % 3] . " {$pack}pcs",
+            'dog-food', 'cat-food', 'small-animals' => "{$base} {$kg[$n % count($kg)]}kg",
+            'pet-health' => str_contains($base, 'Spray') || str_contains($base, 'Drops')
+                ? "{$base} {$ml[$n % count($ml)]}ml"
+                : "{$base} {$packs[$n % count($packs)]}pcs",
+            'pet-toys' => "{$base} Model " . (($n % 5000) + 1),
+            'pet-grooming' => str_contains($base, 'Shampoo') || str_contains($base, 'Spray')
+                ? "{$base} {$ml[$n % count($ml)]}ml"
+                : "{$base} {$packs[$n % count($packs)]}pcs",
+            'fish-aquatics' => str_contains($base, 'Food')
+                ? "{$base} {$kg[$n % count($kg)]}kg"
+                : "{$base} {$packs[$n % count($packs)]}pcs",
+            'collars-leads' => "{$base} Size {$sizes[$n % count($sizes)]}",
+            'pet-beds' => "{$base} " . [18, 22, 26, 30, 36, 42][$n % 6] . " inch",
+            default => "{$base} {$packs[$n % count($packs)]}pcs",
         };
     }
 

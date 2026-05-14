@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Camera, User } from 'lucide-react'
 
@@ -15,6 +15,12 @@ export function AvatarUpload({ currentUrl, name, onUpload, disabled }: AvatarUpl
   const inputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
+
+  useEffect(() => {
+    if (currentUrl) {
+      setPreview(null)
+    }
+  }, [currentUrl])
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]

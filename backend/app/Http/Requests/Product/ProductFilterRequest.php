@@ -22,7 +22,9 @@ class ProductFilterRequest extends FormRequest
             'min_price'   => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'max_price'   => ['sometimes', 'nullable', 'numeric', 'min:0', 'gte:min_price'],
             'location'    => ['sometimes', 'nullable', 'string', 'max:100'],
-            'sort'        => ['sometimes', 'nullable', 'in:price_asc,price_desc,newest,oldest'],
+            'pet_type'    => ['sometimes', 'nullable', 'string', 'max:60'],
+            'age_group'   => ['sometimes', 'nullable', 'string', 'max:60'],
+            'sort'        => ['sometimes', 'nullable', 'in:price_asc,price_desc,rating,newest,oldest'],
             'per_page'    => ['sometimes', 'nullable', 'integer', 'min:1', 'max:100'],
             'limit'       => ['sometimes', 'nullable', 'integer', 'min:1', 'max:100'],
         ];

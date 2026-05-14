@@ -9,6 +9,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useAdminProducts } from '@/hooks/admin/useAdmin'
 
 export default function AdminProductsPage() {
+  const fallbackImage = '/placeholder-product.png'
   const { products, meta, search, page, setPage, loading, handleSearch, remove } =
     useAdminProducts()
   const [deletingId, setDeletingId] = useState<number | null>(null)
@@ -81,7 +82,17 @@ export default function AdminProductsPage() {
                       <div className="flex items-center gap-3">
                         <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                           {p.primary_image ? (
-                            <Image src={p.primary_image} alt={p.name} fill className="object-cover" sizes="40px" />
+                            <Image
+                              src={p.primary_image}
+                              alt={p.name}
+                              fill
+                              className="object-cover"
+                              sizes="40px"
+                              onError={(e) => {
+                                const target = e.currentTarget as HTMLImageElement
+                                target.src = fallbackImage
+                              }}
+                            />
                           ) : (
                             <div className="h-full flex items-center justify-center">
                               <Package className="h-4 w-4 text-gray-300" />

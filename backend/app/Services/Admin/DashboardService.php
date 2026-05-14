@@ -40,18 +40,30 @@ class DashboardService
             ->orderBy('date')
             ->get();
 
-        $grandTotal = $rows->sum('total');
+        $daily = $rows->keyBy('date');
+        $revenue = [];
+        $grandTotal = 0.0;
 
-        $revenue = $rows->map(fn ($row) => [
-            'date'   => $row->date,
-            'total'  => number_format((float) $row->total, 2, '.', ''),
-            'orders' => (int) $row->orders,
-        ])->values()->all();
+        // Always return a full 30-day timeline (including zero-revenue days)
+        // so the frontend chart can render a stable dynamic graph.
+        for ($i = 29; $i >= 0; $i--) {
+            $day = now()->subDays($i)->toDateString();
+            $row = $daily->get($day);
+            $total = (float) ($row->total ?? 0);
+            $orders = (int) ($row->orders ?? 0);
+            $grandTotal += $total;
+
+            $revenue[] = [
+                'date'   => $day,
+                'total'  => number_format($total, 2, '.', ''),
+                'orders' => $orders,
+            ];
+        }
 
         return [
             'revenue'     => $revenue,
             'period'      => 'last_30_days',
-            'grand_total' => number_format($grandTotal, 2, '.', ''),
+            'grand_total' => number_format((float) $grandTotal, 2, '.', ''),
         ];
     }
 

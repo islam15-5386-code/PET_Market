@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\ProductImageService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -11,6 +12,7 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
+        $imageService = app(ProductImageService::class);
         $categories = Category::pluck('id', 'slug');
 
         $products = [
@@ -196,17 +198,26 @@ class ProductSeeder extends Seeder
                 continue;
             }
 
+            $petType = $imageService->normalizePetType($p['name'] . ' ' . $p['category']);
+            $categoryType = $imageService->normalizeCategory($p['category'] . ' ' . $p['name']);
+            $subCategory = $imageService->normalizeSubCategory($p['name'] . ' ' . ($p['desc'] ?? ''));
+            $images = $imageService->getMultipleImages($petType, $categoryType, $subCategory, 3);
+
             Product::firstOrCreate(
                 ['slug' => Str::slug($p['name'])],
                 [
                     'category_id'    => $categoryId,
+                    'pet_type'       => $petType ?: null,
+                    'sub_category'   => $subCategory ?: null,
                     'name'           => $p['name'],
                     'description'    => $p['desc'],
                     'price'          => $p['price'],
                     'stock_quantity' => $p['stock'],
                     'location'       => $p['location'],
                     'is_available'   => true,
-                    'images'         => [],
+                    'image_url'      => $images[0] ?? null,
+                    'thumbnail_url'  => $images[0] ?? null,
+                    'images'         => $images,
                 ]
             );
 

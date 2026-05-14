@@ -50,7 +50,7 @@ services:
 
   # ── PostgreSQL (production) ───────────────────────────────────────────────────
   postgres:
-    image: postgres:17-alpine
+    image: pgvector/pgvector:pg17
     container_name: petmarket_postgres_prod
     restart: always
     env_file: ./src/.env.production

@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Models\Product;
+use App\Services\ProductImageService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
@@ -11,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class ProductManagementService
 {
+    public function __construct(private readonly ProductImageService $productImageService)
+    {
+    }
+
     /**
      * Paginated list of ALL products for admin (includes unavailable).
      * Supports search, category, availability filter.
@@ -55,8 +60,21 @@ class ProductManagementService
         }
         $data['slug']         = $this->generateUniqueSlug($data['name']);
         $data['sku']          = $data['sku'] ?? $this->generateUniqueSku($data['name']);
-        $data['images']       = !empty($data['image_url']) ? [$data['image_url']] : [];
-        unset($data['image_url']);
+        $categoryName = isset($data['category_id']) ? optional(\App\Models\Category::find($data['category_id']))->name : '';
+        $petType = $this->productImageService->normalizePetType(($data['pet_type'] ?? '') . ' ' . ($data['name'] ?? '') . ' ' . $categoryName);
+        $categoryType = $this->productImageService->normalizeCategory($categoryName ?: ($data['name'] ?? ''));
+        $subCategory = $this->productImageService->normalizeSubCategory(($data['sub_category'] ?? '') . ' ' . ($data['name'] ?? ''));
+        $mappedImages = $this->productImageService->getMultipleImages($petType, $categoryType, $subCategory, 3);
+
+        $data['pet_type'] = $petType ?: ($data['pet_type'] ?? null);
+        $data['sub_category'] = $subCategory ?: ($data['sub_category'] ?? null);
+        if (!empty($data['image_url'])) {
+            $data['images'] = [$data['image_url']];
+        } else {
+            $data['images'] = $mappedImages;
+            $data['image_url'] = $mappedImages[0] ?? null;
+        }
+        $data['thumbnail_url'] = $data['image_url'] ?? ($mappedImages[0] ?? null);
         $data['is_available'] = $data['is_available'] ?? true;
 
         return Product::create($data);
@@ -78,8 +96,17 @@ class ProductManagementService
             $images = $product->images ?? [];
             array_unshift($images, $data['image_url']);
             $data['images'] = array_values(array_unique($images));
+            $data['thumbnail_url'] = $data['image_url'];
         }
-        unset($data['image_url']);
+        if (empty($data['images'])) {
+            $petType = $this->productImageService->inferPetTypeFromProduct($product);
+            $categoryType = $this->productImageService->inferCategoryFromProduct($product);
+            $subCategory = $this->productImageService->inferSubCategoryFromProduct($product);
+            $generated = $this->productImageService->getMultipleImages($petType, $categoryType, $subCategory, 3);
+            $data['images'] = $generated;
+            $data['image_url'] = $generated[0] ?? null;
+            $data['thumbnail_url'] = $generated[0] ?? null;
+        }
 
         $product->update($data);
 

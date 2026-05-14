@@ -24,8 +24,12 @@ class ProductResource extends JsonResource
             'is_available'   => $this->is_available,
             'primary_image'  => $primary,
             'image_url'      => $primary,
+            'images'         => $this->resolveImageUrls($primary),
             'sku'            => $this->sku,
             'brand'          => $this->brand,
+            'pet_type'       => $this->pet_type,
+            'age_group'      => $this->age_group,
+            'tags'           => $this->tags ?? [],
             'rating'         => (float) $this->rating,
             'review_count'   => $this->review_count,
             'location'       => $this->location,
@@ -34,11 +38,40 @@ class ProductResource extends JsonResource
         ];
     }
 
-    private function resolvePrimaryImage(): ?string
+    private function resolvePrimaryImage(): string
     {
+        if (!empty($this->image_url)) {
+            $first = $this->image_url;
+            if (str_starts_with($first, 'http') || str_starts_with($first, '/')) {
+                return $first;
+            }
+            return asset('storage/' . $first);
+        }
+
         $images = $this->images;
-        if (empty($images)) return null;
-        $first = $images[0];
-        return str_starts_with($first, 'http') ? $first : asset('storage/' . $first);
+        if (empty($images)) return '/placeholder-product.png';
+        $first = (string) $images[0];
+        if (str_starts_with($first, 'http') || str_starts_with($first, '/')) {
+            return $first;
+        }
+        return asset('storage/' . $first);
+    }
+
+    private function resolveImageUrls(string $primary): array
+    {
+        $urls = [$primary];
+        $images = $this->images ?? [];
+
+        foreach ($images as $img) {
+            $img = (string) $img;
+            if ($img === '') {
+                continue;
+            }
+            $urls[] = (str_starts_with($img, 'http') || str_starts_with($img, '/'))
+                ? $img
+                : asset('storage/' . $img);
+        }
+
+        return array_values(array_unique($urls));
     }
 }

@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    public function __construct(private readonly CartService $cartService) {}
+    public function __construct(
+        private readonly CartService $cartService,
+        private readonly ProductImageService $productImageService
+    ) {}
 
     /**
      * Build the full order payload from the current cart.
@@ -143,11 +146,16 @@ class OrderService
             $product   = $cartItem->product;
             $unitPrice = (float) $product->price;
             $images    = $product->images ?? [];
+            $fallbackImage = $this->productImageService->getImage(
+                $this->productImageService->inferPetTypeFromProduct($product),
+                $this->productImageService->inferCategoryFromProduct($product),
+                $this->productImageService->inferSubCategoryFromProduct($product),
+            );
 
             return [
                 'product_id'    => $product->id,
                 'product_name'  => $product->name,
-                'product_image' => $images[0] ?? null,
+                'product_image' => $images[0] ?? $fallbackImage,
                 'quantity'      => $cartItem->quantity,
                 'unit_price'    => $unitPrice,
                 'total_price'   => round($unitPrice * $cartItem->quantity, 2),

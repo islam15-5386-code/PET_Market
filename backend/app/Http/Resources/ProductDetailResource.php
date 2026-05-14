@@ -29,6 +29,9 @@ class ProductDetailResource extends JsonResource
             'image_url'      => $imageUrls[0] ?? null,
             'sku'            => $this->sku,
             'brand'          => $this->brand,
+            'pet_type'       => $this->pet_type,
+            'age_group'      => $this->age_group,
+            'tags'           => $this->tags ?? [],
             'rating'         => (float) $this->rating,
             'review_count'   => $this->review_count,
             'location'       => $this->location,
@@ -40,11 +43,29 @@ class ProductDetailResource extends JsonResource
 
     private function resolveAllImageUrls(): array
     {
-        if (empty($this->images)) return [];
+        $urls = [];
+        if (!empty($this->image_url)) {
+            $first = (string) $this->image_url;
+            $urls[] = str_starts_with($first, 'http') || str_starts_with($first, '/')
+                ? $first
+                : asset('storage/' . $first);
+        }
 
-        return array_map(
-            fn (string $img) => str_starts_with($img, 'http') ? $img : asset('storage/' . $img),
+        if (empty($this->images)) {
+            return !empty($urls) ? $urls : ['/placeholder-product.png'];
+        }
+
+        $imageUrls = array_map(
+            function (string $img) {
+                if (str_starts_with($img, 'http') || str_starts_with($img, '/')) {
+                    return $img;
+                }
+                return asset('storage/' . $img);
+            },
             $this->images
         );
+
+        $merged = array_values(array_unique(array_merge($urls, $imageUrls)));
+        return !empty($merged) ? $merged : ['/placeholder-product.png'];
     }
 }

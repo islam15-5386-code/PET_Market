@@ -190,15 +190,16 @@ class ProductManagementController extends Controller
         }
 
         $compact = [
-            'name' => $product->name,
+            'product_name' => $product->name,
             'category' => $product->category?->name,
             'pet_type' => $this->guessPetType($product),
             'age_group' => $this->guessAgeGroup($product),
             'price' => (float) $product->price,
             'brand' => $product->brand,
-            'features' => $this->extractFeatures($product),
-            'stock' => (int) $product->stock_quantity,
-            'target_location' => $product->location ?: 'Bangladesh',
+            'key_features' => $this->extractFeatures($product),
+            'target_customer' => 'Bangladesh pet owners',
+            'language' => 'English',
+            'tone' => 'professional',
         ];
 
         $compact = array_filter($compact, fn ($value) => $value !== null && $value !== '');
@@ -228,7 +229,7 @@ class ProductManagementController extends Controller
         $aiBaseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL', 'http://127.0.0.1:8001')), '/');
 
         try {
-            $aiResponse = Http::timeout(20)->post("{$aiBaseUrl}/api/ai/generate-description", $compact);
+            $aiResponse = Http::timeout(20)->post("{$aiBaseUrl}/ai/product-description/generate", $compact);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
@@ -249,11 +250,11 @@ class ProductManagementController extends Controller
         $payload = $aiResponse->json();
         $record = AiProductDescription::create([
             'product_id' => $product->id,
-            'title' => (string) ($payload['title'] ?? $product->name),
-            'description' => (string) ($payload['description'] ?? ''),
+            'title' => (string) ($payload['professional_product_title'] ?? $product->name),
+            'description' => (string) ($payload['short_description'] ?? ''),
             'seo_keywords' => (array) ($payload['seo_keywords'] ?? []),
             'benefits' => (array) ($payload['benefits'] ?? []),
-            'source' => (string) ($payload['source'] ?? 'template_fallback'),
+            'source' => (string) ($payload['provider_name'] ?? 'template_fallback'),
             'prompt_hash' => $promptHash,
         ]);
 

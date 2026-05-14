@@ -6,8 +6,8 @@ from services.description_service import generate_description
 router = APIRouter(tags=["Description Generator"])
 
 
-@router.post("/api/ai/generate-description", response_model=DescriptionResponse)
-def generate_ai_description(payload: DescriptionRequest):
+@router.post("/ai/product-description/generate", response_model=DescriptionResponse)
+def generate_product_description(payload: DescriptionRequest):
     try:
         result = generate_description(payload)
         return DescriptionResponse(**result)
@@ -16,6 +16,6 @@ def generate_ai_description(payload: DescriptionRequest):
 
 
 # Backward-compatible route
-@router.post("/ai/description-generator", response_model=DescriptionResponse)
-def description_generator_legacy(payload: DescriptionRequest):
-    return generate_ai_description(payload)
+@router.post("/api/ai/generate-description", response_model=DescriptionResponse)
+def generate_product_description_legacy(payload: DescriptionRequest):
+    return generate_product_description(payload)

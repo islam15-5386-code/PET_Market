@@ -22,7 +22,9 @@ class OrderItemResource extends JsonResource
 
     private function resolveImageUrl(?string $image): ?string
     {
-        if (!$image) return null;
-        return str_starts_with($image, 'http') ? $image : asset('storage/' . $image);
+        if (!$image) return '/products/fallback/pet-product-placeholder.jpg';
+        return (str_starts_with($image, 'http') || str_starts_with($image, '/'))
+            ? $image
+            : asset('storage/' . $image);
     }
 }

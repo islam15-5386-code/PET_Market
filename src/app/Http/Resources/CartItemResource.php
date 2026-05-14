@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\ProductImageService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,10 +30,24 @@ class CartItemResource extends JsonResource
         ];
     }
 
-    private function resolvePrimaryImage(?array $images): ?string
+    private function resolvePrimaryImage(?array $images): string
     {
-        if (empty($images)) return null;
-        $first = $images[0];
-        return str_starts_with($first, 'http') ? $first : asset('storage/' . $first);
+        if (!empty($images)) {
+            $first = $images[0];
+            return (str_starts_with($first, 'http') || str_starts_with($first, '/'))
+                ? $first
+                : asset('storage/' . $first);
+        }
+
+        if ($this->product) {
+            $imageService = app(ProductImageService::class);
+            return $imageService->getImage(
+                $imageService->inferPetTypeFromProduct($this->product),
+                $imageService->inferCategoryFromProduct($this->product),
+                $imageService->inferSubCategoryFromProduct($this->product),
+            );
+        }
+
+        return '/products/fallback/pet-product-placeholder.jpg';
     }
 }

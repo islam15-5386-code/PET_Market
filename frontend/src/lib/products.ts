@@ -21,14 +21,22 @@ export interface AIProductSearchResponse {
     pet_type?: string | null
     age_group?: string | null
     category?: string | null
-    max_price?: number | null
-    min_price?: number | null
-    location?: string | null
+    price_max?: number | null
+    price_min?: number | null
     brand?: string | null
+    location?: string | null
+    breed?: string | null
     keywords?: string[]
-    recommended_categories?: string[]
+    confidence?: number
+    semantic_applied?: boolean
+    semantic_weight?: number
   }
   products: Product[]
+  exact_results?: Product[]
+  fallback_results?: Product[]
+  similar_products?: Product[]
+  result_mode?: 'exact' | 'fallback' | 'mixed'
+  message?: string
 }
 
 // ── API calls ─────────────────────────────────────────────────────────────────
@@ -44,6 +52,8 @@ export async function fetchProducts(
   if (filters.min_price != null) params.set('min_price', String(filters.min_price))
   if (filters.max_price != null) params.set('max_price', String(filters.max_price))
   if (filters.location) params.set('location', filters.location)
+  if (filters.pet_type) params.set('pet_type', String(filters.pet_type))
+  if (filters.age_group) params.set('age_group', String(filters.age_group))
   if (filters.sort) params.set('sort', filters.sort)
   if (filters.per_page) {
     params.set('per_page', String(filters.per_page))
@@ -66,7 +76,7 @@ export async function fetchProductBySlug(slug: string): Promise<ProductDetail> {
 
 export async function fetchAIProducts(query: string): Promise<AIProductSearchResponse> {
   const { data } = await api.post<ApiResponse<AIProductSearchResponse>>(
-    '/ai/product-search',
+    '/ai-search',
     { query },
   )
   return data.data!

@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useAdminProduct } from '@/hooks/admin/useAdmin'
 import {
   generateProductDescription,
+  type AIDescriptionGenerateInput,
   type AIGeneratedDescription,
   updateProduct,
   type ProductFormInput,
@@ -61,17 +62,12 @@ export default function EditProductPage() {
     e.target.value = ''
   }
 
-  async function handleGenerateDescription(formData: ProductFormInput) {
-    if (!id) return generated as AIGeneratedDescription
+  async function handleGenerateDescription(input: AIDescriptionGenerateInput) {
     setGenerating(true)
     setGenerateError('')
     try {
-      const ai = await generateProductDescription(id)
+      const ai = await generateProductDescription({ ...input, product_id: id })
       setGenerated(ai)
-      setProduct((prev) => {
-        if (!prev) return prev
-        return { ...prev, name: ai.title || formData.name, description: ai.description || formData.description || '' }
-      })
       return ai
     } catch (err) {
       setGenerateError(getErrorMessage(err))
@@ -134,7 +130,15 @@ export default function EditProductPage() {
             price: Number(product.price),
             stock_quantity: product.stock_quantity,
             location: product.location ?? '',
+            brand: product.brand ?? '',
             is_available: product.is_available,
+            ai_generated_title: product.ai_generated_title ?? '',
+            ai_generated_short_description: product.ai_generated_short_description ?? '',
+            ai_generated_long_description: product.ai_generated_long_description ?? '',
+            ai_seo_keywords: product.ai_seo_keywords ?? [],
+            ai_meta_title: product.ai_meta_title ?? '',
+            ai_meta_description: product.ai_meta_description ?? '',
+            ai_generated_tags: product.ai_generated_tags ?? [],
           }}
           onSubmit={handleSubmit}
           onGenerateDescription={handleGenerateDescription}
@@ -143,6 +147,7 @@ export default function EditProductPage() {
           generated={generated}
           generateError={generateError}
           submitLabel="Update Product"
+          productId={id}
         />
       </div>
 

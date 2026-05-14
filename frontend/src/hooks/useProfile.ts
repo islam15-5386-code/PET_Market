@@ -42,8 +42,9 @@ export function useProfile() {
     setSaving(true)
     setError(null)
     try {
-      const updated = await uploadAvatar(file)
-      setUser(updated)
+      await uploadAvatar(file)
+      const refreshed = await fetchProfile()
+      setUser(refreshed)
       setSuccessMsg('Avatar updated.')
     } catch {
       setError('Failed to upload avatar.')

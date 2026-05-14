@@ -13,15 +13,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<string, string> = {
   primary:
-    'bg-orange-600 text-white hover:bg-orange-700 active:bg-orange-800 disabled:bg-orange-300',
+    'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm hover:shadow-md hover:from-orange-600 hover:to-amber-600 active:scale-[0.99] disabled:from-orange-300 disabled:to-amber-300',
   secondary:
-    'bg-gray-800 text-white hover:bg-gray-900 active:bg-gray-950 disabled:bg-gray-400',
+    'bg-gray-900 text-white shadow-sm hover:bg-gray-800 active:scale-[0.99] disabled:bg-gray-400',
   outline:
-    'border-2 border-orange-600 text-orange-600 hover:bg-orange-50 active:bg-orange-100 disabled:border-orange-300 disabled:text-orange-300',
+    'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 active:scale-[0.99] disabled:text-gray-400',
   ghost:
     'text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:text-gray-400',
   danger:
-    'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-red-300',
+    'bg-red-600 text-white shadow-sm hover:bg-red-700 active:scale-[0.99] disabled:bg-red-300',
 }
 
 const sizeClasses: Record<string, string> = {
@@ -45,9 +45,9 @@ export function Button({
       disabled={disabled || loading}
       className={clsx(
         'inline-flex items-center justify-center gap-2 font-semibold',
-        'transition-colors duration-150 focus:outline-none focus-visible:ring-2',
-        'focus-visible:ring-orange-500 focus-visible:ring-offset-2',
-        'disabled:cursor-not-allowed',
+        'transition-all duration-200 focus:outline-none focus-visible:ring-2',
+        'focus-visible:ring-orange-400 focus-visible:ring-offset-2',
+        'disabled:cursor-not-allowed disabled:shadow-none',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',
