@@ -260,6 +260,25 @@ GET /api/products?search=dog&category=dog-food&min_price=500&max_price=2500&loca
 GET /api/products/{slug}
 ```
 
+## Free-Tier Deployment Summary
+
+Recommended production architecture:
+
+- Frontend: **Vercel** (`frontend/`)
+- Laravel API: **Render Web Service** (`src/`)
+- FastAPI AI service: **Render Web Service** (`ai-service/`)
+- PostgreSQL: **Neon** (free Postgres)
+
+Deployment blueprint:
+
+- `render.yaml`
+- `frontend/vercel.json`
+
+Full deployment runbook:
+
+- [`docs/DEPLOYMENT_FREE_TIER.md`](docs/DEPLOYMENT_FREE_TIER.md)
+- [`docs/GOOGLE_LOGIN_SETUP.md`](docs/GOOGLE_LOGIN_SETUP.md)
+
 ### API response pagination fields
 - `data.products`
 - `data.meta.current_page`
@@ -272,3 +291,4 @@ GET /api/products/{slug}
 2. Click a category card and confirm `/products?category=<slug>` filter is applied.
 3. Use search, price, and location filters and confirm paginated results.
 4. Confirm product list requests never exceed `limit=100`.
+# Pet

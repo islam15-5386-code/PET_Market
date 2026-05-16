@@ -49,7 +49,7 @@ export function Alert({
     <div
       role="alert"
       className={clsx(
-        'flex gap-3 rounded-xl border p-4',
+        'motion-fade-up flex gap-3 rounded-xl border p-4 shadow-[0_12px_24px_-26px_rgba(15,23,42,.7)]',
         classes,
         className,
       )}

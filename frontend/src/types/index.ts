@@ -124,7 +124,7 @@ export interface ProductFilters {
   location?: string
   pet_type?: string | null
   age_group?: string | null
-  sort?: 'newest' | 'oldest' | 'price_asc' | 'price_desc'
+  sort?: 'newest' | 'oldest' | 'price_asc' | 'price_desc' | 'price_low' | 'price_high'
     | 'rating'
   per_page?: number
   page?: number

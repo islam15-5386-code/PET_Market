@@ -231,13 +231,20 @@ class ProductManagementController extends Controller
         }
 
         try {
-            $aiResponse = Http::timeout(20)->post("{$aiBaseUrl}/api/ai/generate-description", $compact);
+            $aiResponse = Http::timeout(20)->post("{$aiBaseUrl}/ai/product-description/generate", $compact);
         } catch (\Throwable $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'AI service is unavailable right now.',
-                'error' => $e->getMessage(),
-            ], 503);
+                'success' => true,
+                'message' => 'AI service unavailable. Returning template fallback.',
+                'data' => [
+                    'source' => 'template_fallback',
+                    'title' => $product->name,
+                    'description' => "Reliable {$product->name} for daily pet care use.",
+                    'seo_keywords' => [$product->name, (string) ($product->category?->name ?? 'pet product')],
+                    'benefits' => ['Supports routine pet care', 'Practical daily use'],
+                    'cached' => false,
+                ],
+            ], 200);
         }
 
         if (!$aiResponse->successful()) {

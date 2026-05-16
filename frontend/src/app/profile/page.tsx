@@ -77,8 +77,8 @@ export default function ProfilePage() {
   })
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Profile</h1>
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+      <h1 className="mb-6 text-3xl font-bold text-slate-900">My Profile</h1>
 
       {error && <Alert variant="error" message={error} className="mb-4" />}
       {successMsg && (
@@ -86,12 +86,12 @@ export default function ProfilePage() {
       )}
 
       {/* ── Profile card ──────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-5">
+      <div className="mb-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_20px_48px_-36px_rgba(15,23,42,.55)]">
 
         {/* Header with avatar */}
-        <div className="bg-gradient-to-r from-orange-500 to-amber-400 h-24 relative" />
+        <div className="relative h-32 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400" />
         <div className="px-6 pb-6">
-          <div className="flex items-end justify-between -mt-12 mb-4">
+          <div className="-mt-14 mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <AvatarUpload
               currentUrl={user.avatar_url}
               name={user.name}
@@ -131,17 +131,17 @@ export default function ProfilePage() {
           </div>
 
           {/* Account meta */}
-          <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-6">
-            <span className="flex items-center gap-1.5">
-              <Mail className="h-4 w-4 text-gray-400" />
+          <div className="mb-6 flex flex-wrap gap-4 text-sm text-slate-500">
+            <span className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">
+              <Mail className="h-4 w-4 text-slate-400" />
               {user.email}
             </span>
-            <span className="flex items-center gap-1.5">
-              <Shield className="h-4 w-4 text-gray-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">
+              <Shield className="h-4 w-4 text-slate-400" />
               <span className="capitalize">{user.role}</span>
             </span>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4 text-gray-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">
+              <Calendar className="h-4 w-4 text-slate-400" />
               Joined {joinedDate}
             </span>
           </div>
@@ -199,10 +199,10 @@ export default function ProfilePage() {
                 { label: 'Postal Code',  value: user.postal_code ?? '—' },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-0.5">
+                  <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-slate-400">
                     {label}
                   </p>
-                  <p className="text-sm font-medium text-gray-900">{value}</p>
+                  <p className="text-base font-semibold text-slate-900">{value}</p>
                 </div>
               ))}
             </div>
@@ -211,8 +211,8 @@ export default function ProfilePage() {
       </div>
 
       {/* ── Account status card ───────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_20px_48px_-36px_rgba(15,23,42,.55)]">
+        <h2 className="mb-4 text-sm font-semibold text-slate-900">
           Account Status
         </h2>
         <div className="flex items-center gap-3">
@@ -221,7 +221,7 @@ export default function ProfilePage() {
               user.is_active ? 'bg-green-500' : 'bg-red-500'
             }`}
           />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-slate-700">
             {user.is_active ? 'Active' : 'Suspended'}
           </span>
         </div>

@@ -1,27 +1,30 @@
 'use client'
 
-import React, { Suspense, useCallback, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ProductGrid } from '@/components/product/ProductGrid'
 import { ProductFiltersPanel } from '@/components/product/ProductFilters'
 import { useProducts } from '@/hooks/useProducts'
-import { fetchAIProducts, type AIProductSearchResponse } from '@/lib/products'
+import { fetchAIProducts, fetchAISuggestions, type AIProductSearchResponse } from '@/lib/products'
 import { getErrorMessage } from '@/lib/api'
 import { AIChip } from '@/components/ui/AIChip'
 import { Badge } from '@/components/ui/Badge'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { SearchInput } from '@/components/ui/SearchInput'
+import { Button } from '@/components/ui/Button'
+import { IconButton } from '@/components/ui/IconButton'
 import type { ProductFilters } from '@/types'
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
-  { value: 'price_asc', label: 'Price: Low -> High' },
-  { value: 'price_desc', label: 'Price: High -> Low' },
+  { value: 'price_low', label: 'Price: Low -> High' },
+  { value: 'price_high', label: 'Price: High -> Low' },
   { value: 'rating', label: 'Top Rated' },
 ]
 
-const AI_QUERY_SUGGESTIONS = [
+const AI_QUERY_SUGGESTIONS_FALLBACK = [
   'kitten food under 1000 BDT',
   'grooming items for Persian cat',
   'puppy shampoo in Dhaka',
@@ -50,6 +53,7 @@ function ProductsPageContent() {
   const [aiLoading, setAiLoading] = useState(false)
   const [aiError, setAiError] = useState<string | null>(null)
   const [aiResult, setAiResult] = useState<AIProductSearchResponse | null>(null)
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>(AI_QUERY_SUGGESTIONS_FALLBACK)
 
   const filters = readFiltersFromURL(searchParams)
   const { products, meta, loading, error } = useProducts(filters)
@@ -87,6 +91,22 @@ function ProductsPageContent() {
   const displayProducts = aiResult ? aiDisplayProducts : products
   const displayLoading = aiLoading || loading
   const displayError = aiError ?? error
+
+  useEffect(() => {
+    let mounted = true
+    fetchAISuggestions()
+      .then((items) => {
+        if (!mounted) return
+        if (items.length > 0) setAiSuggestions(items)
+      })
+      .catch(() => {
+        // keep fallback suggestions
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   async function runAISearch() {
     if (!aiQuery.trim()) return
@@ -134,12 +154,12 @@ function ProductsPageContent() {
             <select
               value={filters.sort ?? 'newest'}
               onChange={(e) => updateFilters({ sort: e.target.value as ProductFilters['sort'], page: 1 })}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-orange-300 focus:ring-2 focus:ring-orange-200"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-300 focus:ring-2 focus:ring-amber-200"
             >
               {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
 
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50">
+            <button onClick={() => setSidebarOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-slate-50 lg:hidden">
               <SlidersHorizontal className="h-4 w-4" /> Filters
             </button>
           </div>
@@ -147,18 +167,16 @@ function ProductsPageContent() {
       />
 
       <div className="mb-4">
-        <input
+        <SearchInput
           type="search"
           placeholder="Search products by name, brand, location..."
           defaultValue={filters.search ?? ''}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') updateFilters({ search: (e.target as HTMLInputElement).value || undefined, page: 1 })
-          }}
-          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-orange-300 focus:ring-2 focus:ring-orange-200 sm:max-w-xl"
+          onEnter={(value) => updateFilters({ search: value || undefined, page: 1 })}
+          className="sm:max-w-xl"
         />
       </div>
 
-      <div className="mb-6 rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-orange-50 p-4">
+      <div className="motion-fade-up dynamic-surface mb-6 rounded-2xl border border-sky-100 bg-gradient-to-r from-sky-50 via-white to-amber-50 p-4 shadow-[0_12px_28px_-24px_rgba(14,116,144,.6)]">
         <div className="mb-3 flex items-center justify-between"><AIChip label="AI Product Search" />{aiResult && <Badge variant="ai">Result Mode: {aiResult.ai_filters.semantic_applied ? 'Semantic + Filter' : 'Filter + Keyword'}</Badge>}</div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
@@ -167,12 +185,12 @@ function ProductsPageContent() {
             onChange={(e) => setAiQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') runAISearch() }}
             placeholder="Try: kitten food under 1000 BDT"
-            className="w-full rounded-xl border border-indigo-200 bg-white px-4 py-2.5 text-sm focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+            className="w-full rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-sm focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
           />
-          <button onClick={runAISearch} disabled={aiLoading || !aiQuery.trim()} className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60">
+          <Button onClick={runAISearch} disabled={aiLoading || !aiQuery.trim()} variant="secondary">
             {aiLoading ? 'Searching...' : 'Run AI Search'}
-          </button>
-          {aiResult && <button onClick={clearAISearch} className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">Clear</button>}
+          </Button>
+          {aiResult && <Button onClick={clearAISearch} variant="outline">Clear</Button>}
         </div>
 
         {aiResult && (
@@ -185,7 +203,7 @@ function ProductsPageContent() {
           </div>
         )}
         {aiResult?.ai_filters?.location && (
-          <p className="mt-2 text-xs text-gray-600">Showing products in {aiResult.ai_filters.location}</p>
+          <p className="mt-2 text-xs text-slate-600">Showing products in {aiResult.ai_filters.location}</p>
         )}
         {aiResult?.result_mode === 'fallback' && (
           <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
@@ -194,8 +212,8 @@ function ProductsPageContent() {
         )}
 
         <div className="mt-3 flex flex-wrap gap-2">
-          {AI_QUERY_SUGGESTIONS.map((q) => (
-            <button key={q} type="button" onClick={() => runAISearchWithQuery(q)} className="rounded-full border border-indigo-200 bg-white px-3 py-1.5 text-xs text-indigo-700 hover:bg-indigo-50">
+          {aiSuggestions.map((q) => (
+            <button key={q} type="button" onClick={() => runAISearchWithQuery(q)} className="rounded-full border border-sky-200 bg-white px-3 py-1.5 text-xs text-sky-700 transition-all duration-200 hover:border-sky-300 hover:bg-sky-50 hover:shadow-sm">
               {q}
             </button>
           ))}
@@ -224,9 +242,7 @@ function ProductsPageContent() {
         )}
 
         <div className="min-w-0 flex-1">
-          {aiResult && aiExact.length > 0 && (
-            <p className="mb-3 text-xs font-medium text-emerald-700">Exact matches</p>
-          )}
+          {aiResult && aiExact.length > 0 && <p className="mb-3 text-xs font-medium text-emerald-700">Exact matches</p>}
           {aiResult && aiExact.length === 0 && aiFallback.length > 0 && (
             <p className="mb-3 text-xs font-medium text-amber-700">Similar products from other locations</p>
           )}
@@ -234,26 +250,26 @@ function ProductsPageContent() {
 
           {!aiResult && !displayLoading && totalPages > 1 && (
             <div className="mt-10 flex items-center justify-center gap-2">
-              <button disabled={currentPage <= 1} onClick={() => updateFilters({ page: currentPage - 1 })} className="rounded-xl border border-gray-300 p-2 hover:bg-gray-50 disabled:opacity-40">
+              <IconButton disabled={currentPage <= 1} onClick={() => updateFilters({ page: currentPage - 1 })} label="Previous page">
                 <ChevronLeft className="h-4 w-4" />
-              </button>
+              </IconButton>
 
               {Array.from({ length: totalPages }, (_, i) => i + 1)
                 .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
                 .reduce<(number | '...')[]>((acc, p, i, arr) => { if (i > 0 && (arr[i - 1] as number) + 1 < p) acc.push('...'); acc.push(p); return acc }, [])
                 .map((item, i) =>
                   item === '...' ? (
-                    <span key={`ellipsis-${i}`} className="px-2 text-gray-400">...</span>
+                    <span key={`ellipsis-${i}`} className="px-2 text-slate-400">...</span>
                   ) : (
-                    <button key={item} onClick={() => updateFilters({ page: item as number })} className={`min-w-[36px] h-9 rounded-xl text-sm font-medium border ${currentPage === item ? 'bg-orange-500 text-white border-orange-500' : 'border-gray-300 hover:bg-gray-50'}`}>
+                    <button key={item} onClick={() => updateFilters({ page: item as number })} className={`min-w-[36px] h-9 rounded-xl text-sm font-medium border ${currentPage === item ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-300 hover:bg-slate-50'}`}>
                       {item}
                     </button>
                   ),
                 )}
 
-              <button disabled={currentPage >= totalPages} onClick={() => updateFilters({ page: currentPage + 1 })} className="rounded-xl border border-gray-300 p-2 hover:bg-gray-50 disabled:opacity-40">
+              <IconButton disabled={currentPage >= totalPages} onClick={() => updateFilters({ page: currentPage + 1 })} label="Next page">
                 <ChevronRight className="h-4 w-4" />
-              </button>
+              </IconButton>
             </div>
           )}
         </div>

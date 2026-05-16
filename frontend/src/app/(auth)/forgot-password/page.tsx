@@ -71,15 +71,15 @@ export default function ForgotPasswordPage() {
     <div className="auth-card">
       <Link
         href="/login"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to login
       </Link>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Forgot password?</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-slate-900">Forgot password?</h1>
+        <p className="mt-1 text-sm text-slate-500">
           Enter your email and we&apos;ll send you a reset link.
         </p>
       </div>

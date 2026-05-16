@@ -1,0 +1,156 @@
+question,intent,pet_type,category,age_group,answer
+Which food is good for my puppy?,food_advice,dog,food,puppy,Choose balanced age-specific food with quality protein.
+Which food is good for my puppy? under 1500 taka,product_recommendation,dog,food,puppy,I can suggest budget-friendly food options.
+Best dog food under 1000 BDT,food_advice,dog,food,puppy,Choose balanced age-specific food with quality protein.
+Best dog food under 1000 BDT under 1500 taka,product_recommendation,dog,food,puppy,I can suggest budget-friendly food options.
+amar kukur er jonno valo food chai,food_advice,dog,food,puppy,Choose balanced age-specific food with quality protein.
+amar kukur er jonno valo food chai under 1500 taka,product_recommendation,dog,food,puppy,I can suggest budget-friendly food options.
+puppy er jonno kon khabar valo?,food_advice,dog,food,puppy,Choose balanced age-specific food with quality protein.
+puppy er jonno kon khabar valo? under 1500 taka,product_recommendation,dog,food,puppy,I can suggest budget-friendly food options.
+Need budget dog food,food_advice,dog,food,puppy,Choose balanced age-specific food with quality protein.
+Need budget dog food under 1500 taka,product_recommendation,dog,food,puppy,I can suggest budget-friendly food options.
+How often should I groom my dog?,grooming_advice,dog,grooming,puppy,Groom regularly based on coat type and season.
+dog er grooming kotodin por por kora uchit?,grooming_advice,dog,grooming,puppy,Groom regularly based on coat type and season.
+best shampoo for my puppy,grooming_advice,dog,grooming,puppy,Groom regularly based on coat type and season.
+puppy er jonno kon shampoo valo?,grooming_advice,dog,grooming,puppy,Groom regularly based on coat type and season.
+cat grooming tips please,grooming_advice,dog,grooming,puppy,Groom regularly based on coat type and season.
+My dog is not eating what should I do?,health_warning,dog,medicine,puppy,Consult a veterinarian for medical concerns.
+My dog is not eating what should I do? with breathing problem,emergency_warning,dog,medicine,puppy,This may be serious. Please contact a veterinarian immediately.
+dog vomiting and weak,health_warning,dog,medicine,puppy,Consult a veterinarian for medical concerns.
+dog vomiting and weak with breathing problem,emergency_warning,dog,medicine,puppy,This may be serious. Please contact a veterinarian immediately.
+amar kukur khabar khacche na,health_warning,dog,medicine,puppy,Consult a veterinarian for medical concerns.
+amar kukur khabar khacche na with breathing problem,emergency_warning,dog,medicine,puppy,This may be serious. Please contact a veterinarian immediately.
+dog has fever,health_warning,dog,medicine,puppy,Consult a veterinarian for medical concerns.
+dog has fever with breathing problem,emergency_warning,dog,medicine,puppy,This may be serious. Please contact a veterinarian immediately.
+medicine for dog diarrhea,health_warning,dog,medicine,puppy,Consult a veterinarian for medical concerns.
+medicine for dog diarrhea with breathing problem,emergency_warning,dog,medicine,puppy,This may be serious. Please contact a veterinarian immediately.
+How to take care of my dog?,general_pet_care,dog,accessory,puppy,"Maintain routine feeding, clean water, hygiene, and activity."
+pet care routine for puppy,general_pet_care,dog,accessory,puppy,"Maintain routine feeding, clean water, hygiene, and activity."
+daily care tips for dog,general_pet_care,dog,accessory,puppy,"Maintain routine feeding, clean water, hygiene, and activity."
+new pet owner advice,general_pet_care,dog,accessory,puppy,"Maintain routine feeding, clean water, hygiene, and activity."
+how much water should dog drink,general_pet_care,dog,accessory,puppy,"Maintain routine feeding, clean water, hygiene, and activity."
+Which food is good for my kitten?,food_advice,cat,food,kitten,Choose balanced age-specific food with quality protein.
+Which food is good for my kitten? under 1500 taka,product_recommendation,cat,food,kitten,I can suggest budget-friendly food options.
+Best cat food under 1000 BDT,food_advice,cat,food,kitten,Choose balanced age-specific food with quality protein.
+Best cat food under 1000 BDT under 1500 taka,product_recommendation,cat,food,kitten,I can suggest budget-friendly food options.
+amar biral er jonno valo food chai,food_advice,cat,food,kitten,Choose balanced age-specific food with quality protein.
+amar biral er jonno valo food chai under 1500 taka,product_recommendation,cat,food,kitten,I can suggest budget-friendly food options.
+kitten er jonno kon khabar valo?,food_advice,cat,food,kitten,Choose balanced age-specific food with quality protein.
+kitten er jonno kon khabar valo? under 1500 taka,product_recommendation,cat,food,kitten,I can suggest budget-friendly food options.
+Need budget cat food,food_advice,cat,food,kitten,Choose balanced age-specific food with quality protein.
+Need budget cat food under 1500 taka,product_recommendation,cat,food,kitten,I can suggest budget-friendly food options.
+How often should I groom my cat?,grooming_advice,cat,grooming,kitten,Groom regularly based on coat type and season.
+cat er grooming kotodin por por kora uchit?,grooming_advice,cat,grooming,kitten,Groom regularly based on coat type and season.
+best shampoo for my kitten,grooming_advice,cat,grooming,kitten,Groom regularly based on coat type and season.
+puppy er jonno kon shampoo valo?,grooming_advice,cat,grooming,kitten,Groom regularly based on coat type and season.
+cat grooming tips please,grooming_advice,cat,grooming,kitten,Groom regularly based on coat type and season.
+My cat is not eating what should I do?,health_warning,cat,medicine,kitten,Consult a veterinarian for medical concerns.
+My cat is not eating what should I do? with breathing problem,emergency_warning,cat,medicine,kitten,This may be serious. Please contact a veterinarian immediately.
+cat vomiting and weak,health_warning,cat,medicine,kitten,Consult a veterinarian for medical concerns.
+cat vomiting and weak with breathing problem,emergency_warning,cat,medicine,kitten,This may be serious. Please contact a veterinarian immediately.
+amar biral khabar khacche na,health_warning,cat,medicine,kitten,Consult a veterinarian for medical concerns.
+amar biral khabar khacche na with breathing problem,emergency_warning,cat,medicine,kitten,This may be serious. Please contact a veterinarian immediately.
+cat has fever,health_warning,cat,medicine,kitten,Consult a veterinarian for medical concerns.
+cat has fever with breathing problem,emergency_warning,cat,medicine,kitten,This may be serious. Please contact a veterinarian immediately.
+medicine for cat diarrhea,health_warning,cat,medicine,kitten,Consult a veterinarian for medical concerns.
+medicine for cat diarrhea with breathing problem,emergency_warning,cat,medicine,kitten,This may be serious. Please contact a veterinarian immediately.
+How to take care of my cat?,general_pet_care,cat,accessory,kitten,"Maintain routine feeding, clean water, hygiene, and activity."
+pet care routine for kitten,general_pet_care,cat,accessory,kitten,"Maintain routine feeding, clean water, hygiene, and activity."
+daily care tips for cat,general_pet_care,cat,accessory,kitten,"Maintain routine feeding, clean water, hygiene, and activity."
+new pet owner advice,general_pet_care,cat,accessory,kitten,"Maintain routine feeding, clean water, hygiene, and activity."
+how much water should cat drink,general_pet_care,cat,accessory,kitten,"Maintain routine feeding, clean water, hygiene, and activity."
+Which food is good for my adult?,food_advice,bird,food,adult,Choose balanced age-specific food with quality protein.
+Which food is good for my adult? under 1500 taka,product_recommendation,bird,food,adult,I can suggest budget-friendly food options.
+Best bird food under 1000 BDT,food_advice,bird,food,adult,Choose balanced age-specific food with quality protein.
+Best bird food under 1000 BDT under 1500 taka,product_recommendation,bird,food,adult,I can suggest budget-friendly food options.
+amar pakhi er jonno valo food chai,food_advice,bird,food,adult,Choose balanced age-specific food with quality protein.
+amar pakhi er jonno valo food chai under 1500 taka,product_recommendation,bird,food,adult,I can suggest budget-friendly food options.
+adult er jonno kon khabar valo?,food_advice,bird,food,adult,Choose balanced age-specific food with quality protein.
+adult er jonno kon khabar valo? under 1500 taka,product_recommendation,bird,food,adult,I can suggest budget-friendly food options.
+Need budget bird food,food_advice,bird,food,adult,Choose balanced age-specific food with quality protein.
+Need budget bird food under 1500 taka,product_recommendation,bird,food,adult,I can suggest budget-friendly food options.
+How often should I groom my bird?,grooming_advice,bird,grooming,adult,Groom regularly based on coat type and season.
+bird er grooming kotodin por por kora uchit?,grooming_advice,bird,grooming,adult,Groom regularly based on coat type and season.
+best shampoo for my adult,grooming_advice,bird,grooming,adult,Groom regularly based on coat type and season.
+puppy er jonno kon shampoo valo?,grooming_advice,bird,grooming,adult,Groom regularly based on coat type and season.
+cat grooming tips please,grooming_advice,bird,grooming,adult,Groom regularly based on coat type and season.
+My bird is not eating what should I do?,health_warning,bird,medicine,adult,Consult a veterinarian for medical concerns.
+My bird is not eating what should I do? with breathing problem,emergency_warning,bird,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+bird vomiting and weak,health_warning,bird,medicine,adult,Consult a veterinarian for medical concerns.
+bird vomiting and weak with breathing problem,emergency_warning,bird,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+amar pakhi khabar khacche na,health_warning,bird,medicine,adult,Consult a veterinarian for medical concerns.
+amar pakhi khabar khacche na with breathing problem,emergency_warning,bird,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+bird has fever,health_warning,bird,medicine,adult,Consult a veterinarian for medical concerns.
+bird has fever with breathing problem,emergency_warning,bird,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+medicine for bird diarrhea,health_warning,bird,medicine,adult,Consult a veterinarian for medical concerns.
+medicine for bird diarrhea with breathing problem,emergency_warning,bird,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+How to take care of my bird?,general_pet_care,bird,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+pet care routine for adult,general_pet_care,bird,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+daily care tips for bird,general_pet_care,bird,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+new pet owner advice,general_pet_care,bird,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+how much water should bird drink,general_pet_care,bird,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+Which food is good for my adult?,food_advice,fish,food,adult,Choose balanced age-specific food with quality protein.
+Which food is good for my adult? under 1500 taka,product_recommendation,fish,food,adult,I can suggest budget-friendly food options.
+Best fish food under 1000 BDT,food_advice,fish,food,adult,Choose balanced age-specific food with quality protein.
+Best fish food under 1000 BDT under 1500 taka,product_recommendation,fish,food,adult,I can suggest budget-friendly food options.
+amar mach er jonno valo food chai,food_advice,fish,food,adult,Choose balanced age-specific food with quality protein.
+amar mach er jonno valo food chai under 1500 taka,product_recommendation,fish,food,adult,I can suggest budget-friendly food options.
+adult er jonno kon khabar valo?,food_advice,fish,food,adult,Choose balanced age-specific food with quality protein.
+adult er jonno kon khabar valo? under 1500 taka,product_recommendation,fish,food,adult,I can suggest budget-friendly food options.
+Need budget fish food,food_advice,fish,food,adult,Choose balanced age-specific food with quality protein.
+Need budget fish food under 1500 taka,product_recommendation,fish,food,adult,I can suggest budget-friendly food options.
+How often should I groom my fish?,grooming_advice,fish,grooming,adult,Groom regularly based on coat type and season.
+fish er grooming kotodin por por kora uchit?,grooming_advice,fish,grooming,adult,Groom regularly based on coat type and season.
+best shampoo for my adult,grooming_advice,fish,grooming,adult,Groom regularly based on coat type and season.
+puppy er jonno kon shampoo valo?,grooming_advice,fish,grooming,adult,Groom regularly based on coat type and season.
+cat grooming tips please,grooming_advice,fish,grooming,adult,Groom regularly based on coat type and season.
+My fish is not eating what should I do?,health_warning,fish,medicine,adult,Consult a veterinarian for medical concerns.
+My fish is not eating what should I do? with breathing problem,emergency_warning,fish,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+fish vomiting and weak,health_warning,fish,medicine,adult,Consult a veterinarian for medical concerns.
+fish vomiting and weak with breathing problem,emergency_warning,fish,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+amar mach khabar khacche na,health_warning,fish,medicine,adult,Consult a veterinarian for medical concerns.
+amar mach khabar khacche na with breathing problem,emergency_warning,fish,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+fish has fever,health_warning,fish,medicine,adult,Consult a veterinarian for medical concerns.
+fish has fever with breathing problem,emergency_warning,fish,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+medicine for fish diarrhea,health_warning,fish,medicine,adult,Consult a veterinarian for medical concerns.
+medicine for fish diarrhea with breathing problem,emergency_warning,fish,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+How to take care of my fish?,general_pet_care,fish,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+pet care routine for adult,general_pet_care,fish,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+daily care tips for fish,general_pet_care,fish,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+new pet owner advice,general_pet_care,fish,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+how much water should fish drink,general_pet_care,fish,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+Which food is good for my adult?,food_advice,rabbit,food,adult,Choose balanced age-specific food with quality protein.
+Which food is good for my adult? under 1500 taka,product_recommendation,rabbit,food,adult,I can suggest budget-friendly food options.
+Best rabbit food under 1000 BDT,food_advice,rabbit,food,adult,Choose balanced age-specific food with quality protein.
+Best rabbit food under 1000 BDT under 1500 taka,product_recommendation,rabbit,food,adult,I can suggest budget-friendly food options.
+amar khorgosh er jonno valo food chai,food_advice,rabbit,food,adult,Choose balanced age-specific food with quality protein.
+amar khorgosh er jonno valo food chai under 1500 taka,product_recommendation,rabbit,food,adult,I can suggest budget-friendly food options.
+adult er jonno kon khabar valo?,food_advice,rabbit,food,adult,Choose balanced age-specific food with quality protein.
+adult er jonno kon khabar valo? under 1500 taka,product_recommendation,rabbit,food,adult,I can suggest budget-friendly food options.
+Need budget rabbit food,food_advice,rabbit,food,adult,Choose balanced age-specific food with quality protein.
+Need budget rabbit food under 1500 taka,product_recommendation,rabbit,food,adult,I can suggest budget-friendly food options.
+How often should I groom my rabbit?,grooming_advice,rabbit,grooming,adult,Groom regularly based on coat type and season.
+rabbit er grooming kotodin por por kora uchit?,grooming_advice,rabbit,grooming,adult,Groom regularly based on coat type and season.
+best shampoo for my adult,grooming_advice,rabbit,grooming,adult,Groom regularly based on coat type and season.
+puppy er jonno kon shampoo valo?,grooming_advice,rabbit,grooming,adult,Groom regularly based on coat type and season.
+cat grooming tips please,grooming_advice,rabbit,grooming,adult,Groom regularly based on coat type and season.
+My rabbit is not eating what should I do?,health_warning,rabbit,medicine,adult,Consult a veterinarian for medical concerns.
+My rabbit is not eating what should I do? with breathing problem,emergency_warning,rabbit,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+rabbit vomiting and weak,health_warning,rabbit,medicine,adult,Consult a veterinarian for medical concerns.
+rabbit vomiting and weak with breathing problem,emergency_warning,rabbit,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+amar khorgosh khabar khacche na,health_warning,rabbit,medicine,adult,Consult a veterinarian for medical concerns.
+amar khorgosh khabar khacche na with breathing problem,emergency_warning,rabbit,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+rabbit has fever,health_warning,rabbit,medicine,adult,Consult a veterinarian for medical concerns.
+rabbit has fever with breathing problem,emergency_warning,rabbit,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+medicine for rabbit diarrhea,health_warning,rabbit,medicine,adult,Consult a veterinarian for medical concerns.
+medicine for rabbit diarrhea with breathing problem,emergency_warning,rabbit,medicine,adult,This may be serious. Please contact a veterinarian immediately.
+How to take care of my rabbit?,general_pet_care,rabbit,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+pet care routine for adult,general_pet_care,rabbit,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+daily care tips for rabbit,general_pet_care,rabbit,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+new pet owner advice,general_pet_care,rabbit,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+how much water should rabbit drink,general_pet_care,rabbit,accessory,adult,"Maintain routine feeding, clean water, hygiene, and activity."
+Food under 1000 BDT,product_recommendation,,food,,Please share pet type for better recommendation.
+My pet has bleeding,emergency_warning,,medicine,,This may be serious. Please contact a veterinarian immediately.
+hello,unknown,,,,Please share pet type and need.
+"amar biral khabar khacche na, ki korbo?",health_warning,cat,medicine,adult,Consult a veterinarian for medical concerns.
+rabbit er jonno kon food valo?,food_advice,rabbit,food,adult,Rabbit-friendly high-fiber food is best.

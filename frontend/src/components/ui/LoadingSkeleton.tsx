@@ -5,5 +5,5 @@ interface LoadingSkeletonProps {
 }
 
 export function LoadingSkeleton({ className = '' }: LoadingSkeletonProps) {
-  return <div className={`animate-pulse rounded-xl bg-gray-200/75 ${className}`} />
+  return <div className={`shimmer rounded-xl ${className}`} />
 }

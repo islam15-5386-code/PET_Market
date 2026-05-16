@@ -15,7 +15,7 @@ export function ProductGrid({ products, loading, error }: ProductGridProps) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="surface-card overflow-hidden">
+          <div key={i} className="surface-card overflow-hidden motion-fade-up">
             <LoadingSkeleton className="aspect-square w-full rounded-none" />
             <div className="space-y-2 p-4">
               <LoadingSkeleton className="h-4 w-4/5" />
@@ -38,8 +38,13 @@ export function ProductGrid({ products, loading, error }: ProductGridProps) {
 
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {products.map((product, idx) => (
+        <div
+          key={product.id}
+          className={`motion-fade-up ${idx % 4 === 0 ? 'stagger-1' : idx % 4 === 1 ? 'stagger-2' : idx % 4 === 2 ? 'stagger-3' : 'stagger-4'}`}
+        >
+          <ProductCard product={product} />
+        </div>
       ))}
     </div>
   )

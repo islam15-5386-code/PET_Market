@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class DescriptionRequest(BaseModel):
@@ -10,14 +10,21 @@ class DescriptionRequest(BaseModel):
     age_group: str | None = Field(default=None, max_length=50)
     brand: str | None = Field(default=None, max_length=120)
     price: float | None = Field(default=None, ge=0)
+    features: list[str] | None = None
+    key_features: list[str] | str | None = None
     weight_or_size: str | None = Field(default=None, max_length=100)
     ingredients_or_materials: list[str] | str | None = None
-    key_features: list[str] | str | None = None
     usage_instruction: str | None = Field(default=None, max_length=1000)
     safety_note: str | None = Field(default=None, max_length=1000)
     target_customer: str | None = Field(default=None, max_length=255)
     language: Literal["English", "Bangla", "Bangla-English mixed"] = "English"
     tone: Literal["professional", "friendly", "SEO optimized"] = "professional"
+
+    @model_validator(mode="after")
+    def normalize_features(self):
+        if self.features and not self.key_features:
+            self.key_features = self.features
+        return self
 
 
 class TokenUsage(BaseModel):
@@ -34,7 +41,6 @@ class DescriptionResponse(BaseModel):
     long_description: str
     seo_keywords: list[str]
     benefits: list[str]
-    care_instruction: str
     usage_instruction: str
     safety_warning: str
     meta_title: str

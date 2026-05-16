@@ -33,7 +33,7 @@ class AIDescriptionGenerationTest extends TestCase
     public function test_admin_can_generate_and_reuse_cached_description(): void
     {
         Http::fake([
-            'http://127.0.0.1:8001/api/ai/generate-description' => Http::response([
+            'http://127.0.0.1:8001/ai/product-description/generate' => Http::response([
                 'source' => 'ai_model',
                 'title' => 'Premium Kitten Dry Food by Meow Mix',
                 'description' => 'Balanced kitten nutrition with protein-rich formula for healthy daily growth and easy digestion.',
@@ -82,4 +82,3 @@ class AIDescriptionGenerationTest extends TestCase
         Http::assertSentCount(1);
     }
 }
-

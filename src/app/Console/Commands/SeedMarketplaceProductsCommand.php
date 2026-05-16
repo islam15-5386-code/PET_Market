@@ -100,8 +100,8 @@ class SeedMarketplaceProductsCommand extends Command
         $this->imageService = app(ProductImageService::class);
         $chunkSize = max(10, min((int) $this->option('chunk'), 10000));
         if (DB::getDriverName() === 'pgsql') {
-            // PostgreSQL bind parameter limit is 65535; products insert uses 15 fields/row.
-            $chunkSize = min($chunkSize, 4000);
+            // PostgreSQL bind parameter limit is 65535; products insert uses 19 fields/row.
+            $chunkSize = min($chunkSize, 3000);
         }
         if (DB::getDriverName() === 'sqlite') {
             // SQLite has ~999 SQL variable limit; 15 fields/row => safe upper bound ~66 rows/batch.

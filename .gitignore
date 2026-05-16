@@ -35,3 +35,10 @@ Thumbs.db
 *.cert
 .env.production
 .env.staging
+
+# ── Python / FastAPI local artifacts ─────────────────────────────────────────
+ai-service/__pycache__/
+ai-service/**/*.pyc
+ai-service/.venv*/
+ai-service/venv*/
+.runtime/

@@ -46,6 +46,10 @@ class ProductResource extends JsonResource
 
     private function resolvePrimaryImage(): string
     {
+        if (!empty($this->image_url)) {
+            return (string) $this->image_url;
+        }
+
         $images = $this->resolveAllImageUrls();
         return $images[0] ?? asset('products/fallback/pet-product-placeholder.jpg');
     }

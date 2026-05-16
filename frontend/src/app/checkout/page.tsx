@@ -7,6 +7,7 @@ import { Package, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Alert } from '@/components/ui/Alert'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { useCart } from '@/hooks/useCart'
 import { placeOrder, previewOrder, type OrderPreview } from '@/lib/orders'
 import { getErrorMessage } from '@/lib/api'
@@ -84,14 +85,14 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Checkout</h1>
+      <PageHeader title="Checkout" description="Review shipping details and confirm your order." />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
         {/* ── Shipping form ──────────────────────────────────────────────── */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <h2 className="text-base font-semibold text-gray-900 mb-5">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_16px_34px_-28px_rgba(15,23,42,.7)]">
+            <h2 className="mb-5 text-base font-semibold text-slate-900">
               Shipping Information
             </h2>
 
@@ -151,8 +152,8 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Order notes <span className="text-gray-400 font-normal">(optional)</span>
+                <label className="text-sm font-semibold text-slate-700">
+                  Order notes <span className="font-normal text-slate-400">(optional)</span>
                 </label>
                 <textarea
                   name="notes"
@@ -160,7 +161,7 @@ export default function CheckoutPage() {
                   onChange={handleChange}
                   placeholder="Any special instructions for delivery..."
                   rows={3}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                  className="w-full resize-none rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
                 />
               </div>
             </div>
@@ -180,8 +181,8 @@ export default function CheckoutPage() {
 
         {/* ── Order summary ──────────────────────────────────────────────── */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24">
-            <h2 className="text-base font-semibold text-gray-900 mb-4">
+          <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_16px_34px_-28px_rgba(15,23,42,.7)]">
+            <h2 className="mb-4 text-base font-semibold text-slate-900">
               {preview ? 'Order Preview' : 'Your Cart'}
             </h2>
 
@@ -195,20 +196,20 @@ export default function CheckoutPage() {
 
                 return (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                       {image ? (
                         <Image src={image} alt={name} fill className="object-cover" sizes="48px" />
                       ) : (
                         <div className="h-full flex items-center justify-center">
-                          <Package className="h-5 w-5 text-gray-300" />
+                          <Package className="h-5 w-5 text-slate-300" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-gray-800 line-clamp-1">{name}</p>
-                      <p className="text-xs text-gray-500">×{qty}</p>
+                      <p className="line-clamp-1 text-xs font-medium text-slate-800">{name}</p>
+                      <p className="text-xs text-slate-500">×{qty}</p>
                     </div>
-                    <span className="text-xs font-semibold text-gray-900 shrink-0">
+                    <span className="shrink-0 text-xs font-semibold text-slate-900">
                       ৳{Number(price).toLocaleString()}
                     </span>
                   </div>
@@ -217,12 +218,12 @@ export default function CheckoutPage() {
             </div>
 
             {/* Totals */}
-            <div className="border-t border-gray-100 mt-4 pt-4 flex flex-col gap-2 text-sm">
-              <div className="flex justify-between text-gray-600">
+            <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 text-sm">
+              <div className="flex justify-between text-slate-600">
                 <span>Subtotal</span>
                 <span>৳{Number(preview?.subtotal ?? cartSummary?.subtotal ?? 0).toLocaleString()}</span>
               </div>
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-slate-600">
                 <span>Shipping</span>
                 {(preview?.shipping_fee ?? cartSummary?.shipping_fee) === '0.00' ? (
                   <span className="text-green-600 font-medium">FREE</span>
@@ -230,7 +231,7 @@ export default function CheckoutPage() {
                   <span>৳{Number(preview?.shipping_fee ?? cartSummary?.shipping_fee ?? 0).toLocaleString()}</span>
                 )}
               </div>
-              <div className="flex justify-between font-bold text-gray-900 text-base border-t border-gray-100 pt-2">
+              <div className="flex justify-between border-t border-slate-100 pt-2 text-base font-bold text-slate-900">
                 <span>Total</span>
                 <span>৳{Number(preview?.total_amount ?? cartSummary?.total ?? 0).toLocaleString()}</span>
               </div>
@@ -249,12 +250,12 @@ export default function CheckoutPage() {
             </Button>
 
             {!preview && (
-              <p className="text-xs text-center text-gray-400 mt-2">
+              <p className="mt-2 text-center text-xs text-slate-400">
                 Fill shipping details and click &quot;Preview Bill&quot; first
               </p>
             )}
 
-            <div className="flex items-center justify-center gap-1.5 mt-4 text-xs text-gray-400">
+            <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-slate-400">
               <ShieldCheck className="h-3.5 w-3.5" />
               Secure checkout
             </div>

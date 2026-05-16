@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
       <PageHeader title="Dashboard" description="Live marketplace overview, operational metrics, and alerts." />
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard title="Total Users"     value={s?.total_users ?? 0}    icon={Users}       color="blue"   />
         <StatsCard title="Total Products"  value={s?.total_products ?? 0} icon={Package}     color="purple" />
         <StatsCard title="Total Orders"    value={s?.total_orders ?? 0}   icon={ShoppingBag} color="orange" />
@@ -50,26 +50,26 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Recent orders */}
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900 text-sm">Recent Orders</h2>
-            <Link href="/admin/orders" className="text-xs text-orange-600 hover:text-orange-700 font-medium">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_34px_-28px_rgba(15,23,42,.7)]">
+          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <h2 className="text-sm font-semibold text-slate-900">Recent Orders</h2>
+            <Link href="/admin/orders" className="text-xs font-medium text-amber-700 hover:text-amber-800">
               View all
             </Link>
           </div>
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-slate-50">
             {(snapshot?.recent_orders ?? []).map((order) => (
               <Link
                 key={order.id}
                 href={`/admin/orders`}
-                className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-between px-5 py-3 transition-colors hover:bg-slate-50"
               >
                 <div>
-                  <p className="text-sm font-medium text-gray-900 font-mono">{order.order_number}</p>
-                  <p className="text-xs text-gray-500">{order.customer}</p>
+                  <p className="font-mono text-sm font-medium text-slate-900">{order.order_number}</p>
+                  <p className="text-xs text-slate-500">{order.customer}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-slate-900">
                     ৳{Number(order.total_amount).toLocaleString()}
                   </p>
                   <OrderStatusBadge status={order.status as OrderStatus} />
@@ -80,23 +80,23 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Low stock alerts */}
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900 text-sm">Low Stock Alerts</h2>
-            <Link href="/admin/products" className="text-xs text-orange-600 hover:text-orange-700 font-medium">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_34px_-28px_rgba(15,23,42,.7)]">
+          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <h2 className="text-sm font-semibold text-slate-900">Low Stock Alerts</h2>
+            <Link href="/admin/products" className="text-xs font-medium text-amber-700 hover:text-amber-800">
               Manage
             </Link>
           </div>
 
           {(snapshot?.low_stock_alerts ?? []).length === 0 ? (
-            <div className="px-5 py-8 text-center text-sm text-gray-400">
+            <div className="px-5 py-8 text-center text-sm text-slate-400">
               All products well-stocked ✓
             </div>
           ) : (
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-slate-50">
               {(snapshot?.low_stock_alerts ?? []).map((p) => (
                 <div key={p.id} className="flex items-center justify-between px-5 py-3">
-                  <p className="text-sm text-gray-800 line-clamp-1 flex-1 mr-4">{p.name}</p>
+                  <p className="mr-4 line-clamp-1 flex-1 text-sm text-slate-800">{p.name}</p>
                   <span
                     className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                       p.stock_quantity === 0

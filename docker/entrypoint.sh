@@ -52,9 +52,15 @@ fi
 echo "🗄️  Running database migrations..."
 php artisan migrate --force
 
-# ── Run seeders ───────────────────────────────────────────────────────────────
-echo "🌱 Seeding database..."
-php artisan db:seed --force
+# ── One-time seed for fast restarts ───────────────────────────────────────────
+BOOTSTRAP_FLAG="/var/www/storage/app/.bootstrapped"
+if [ ! -f "${BOOTSTRAP_FLAG}" ]; then
+  echo "🌱 First-time seed..."
+  php artisan db:seed --force
+  touch "${BOOTSTRAP_FLAG}"
+else
+  echo "⚡ Seed skipped (already bootstrapped)."
+fi
 
 # ── Storage link ──────────────────────────────────────────────────────────────
 echo "🔗 Creating storage symlink..."

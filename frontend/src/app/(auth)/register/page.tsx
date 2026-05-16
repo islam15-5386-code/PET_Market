@@ -116,7 +116,7 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600"
+            className="absolute right-3 top-[38px] text-slate-400 hover:text-slate-600"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? (
@@ -143,6 +143,10 @@ export default function RegisterPage() {
           Create Account
         </Button>
       </form>
+
+      <div className="mt-5">
+        <SocialAuthButtons label="sign up" />
+      </div>
 
       <p className="mt-6 text-center text-sm text-gray-600">
         Already have an account?{' '}

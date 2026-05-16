@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class OrderSeeder extends Seeder
 {
@@ -27,7 +28,7 @@ class OrderSeeder extends Seeder
                 return User::create([
                     'name' => "Demo User {$i}",
                     'email' => "demo-user-{$i}@petmarketplace.com",
-                    'password' => 'Password@123',
+                    'password' => Hash::make('Password@123'),
                     'role' => 'user',
                     'is_active' => true,
                     'phone' => '01700000000',
@@ -105,4 +106,3 @@ class OrderSeeder extends Seeder
         $this->command->info("Seeded {$ordersToCreate} demo orders for dashboard charts.");
     }
 }
-

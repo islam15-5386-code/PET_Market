@@ -39,6 +39,10 @@ export interface AIProductSearchResponse {
   message?: string
 }
 
+export interface AISuggestionsResponse {
+  suggestions: string[]
+}
+
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 export async function fetchProducts(
@@ -80,4 +84,9 @@ export async function fetchAIProducts(query: string): Promise<AIProductSearchRes
     { query },
   )
   return data.data!
+}
+
+export async function fetchAISuggestions(): Promise<string[]> {
+  const { data } = await api.get<ApiResponse<AISuggestionsResponse>>('/ai/suggestions')
+  return data.data?.suggestions ?? []
 }

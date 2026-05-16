@@ -10,12 +10,12 @@ interface StatsCardProps {
 }
 
 const colorMap = {
-  orange: 'bg-orange-100 text-orange-600',
-  blue:   'bg-blue-100 text-blue-600',
-  green:  'bg-green-100 text-green-600',
-  purple: 'bg-purple-100 text-purple-600',
-  red:    'bg-red-100 text-red-600',
-  amber:  'bg-amber-100 text-amber-600',
+  orange: 'bg-orange-100 text-orange-700',
+  blue:   'bg-sky-100 text-sky-700',
+  green:  'bg-emerald-100 text-emerald-700',
+  purple: 'bg-violet-100 text-violet-700',
+  red:    'bg-rose-100 text-rose-700',
+  amber:  'bg-amber-100 text-amber-700',
 }
 
 export function StatsCard({
@@ -26,14 +26,16 @@ export function StatsCard({
   subtitle,
 }: StatsCardProps) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 flex items-start gap-4">
+    <div className="dynamic-surface motion-fade-up rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-[0_16px_34px_-28px_rgba(15,23,42,.7)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_40px_-28px_rgba(15,23,42,.7)]">
+      <div className="flex items-start gap-4">
       <div className={clsx('p-3 rounded-xl shrink-0', colorMap[color])}>
         <Icon className="h-5 w-5" />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{title}</p>
-        <p className="text-2xl font-bold text-gray-900 mt-0.5 truncate">{value}</p>
-        {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
+        <p className="mt-0.5 truncate text-2xl font-bold text-slate-900">{value}</p>
+        {subtitle && <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>}
+      </div>
       </div>
     </div>
   )

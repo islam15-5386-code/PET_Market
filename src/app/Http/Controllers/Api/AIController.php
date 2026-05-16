@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Http;
 
 class AIController extends Controller
 {
+    private const MAX_RESULTS = 30;
+
     public function productSearch(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -31,11 +33,22 @@ class AIController extends Controller
                 'user_id' => optional(auth('api')->user())->id,
             ]);
         } catch (\Throwable $e) {
+            $fallbackProducts = $this->keywordFallbackProducts($validated['query']);
             return response()->json([
-                'success' => false,
-                'message' => 'AI service is unavailable right now.',
-                'error' => $e->getMessage(),
-            ], 503);
+                'success' => true,
+                'message' => 'AI service is unavailable. Showing keyword-based results from marketplace data.',
+                'data' => [
+                    'query' => $validated['query'],
+                    'ai_filters' => [
+                        'semantic_applied' => false,
+                        'semantic_weight' => $semanticWeight,
+                    ],
+                    'products' => ProductResource::collection($fallbackProducts),
+                    'exact_results' => ProductResource::collection($fallbackProducts),
+                    'fallback_results' => [],
+                    'result_mode' => 'exact',
+                ],
+            ]);
         }
 
         if (!$aiResponse->successful()) {
@@ -70,9 +83,26 @@ class AIController extends Controller
             $query->where('price', '>=', (float) $filters['min_price']);
         }
 
-        if (!empty($filters['location'])) {
+        if (!empty($filters['pet_type'])) {
             $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
-            $query->where('location', $op, '%' . $filters['location'] . '%');
+            $query->where('pet_type', $op, $filters['pet_type']);
+        }
+
+        if (!empty($filters['age_group'])) {
+            $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($filters, $op) {
+                $q->where('age_group', $op, $filters['age_group'])
+                    ->orWhere('sub_category', $op, $filters['age_group']);
+            });
+        }
+
+        $location = trim((string) ($filters['location'] ?? ''));
+        if ($location !== '') {
+            if (DB::getDriverName() === 'pgsql') {
+                $query->whereRaw('LOWER(TRIM(location)) = LOWER(?)', [$location]);
+            } else {
+                $query->whereRaw('LOWER(TRIM(location)) = ?', [mb_strtolower($location)]);
+            }
         }
 
         if (!empty($filters['brand'])) {
@@ -130,32 +160,43 @@ class AIController extends Controller
             }
         }
 
-        $products = $query->limit(30)->get();
+        $exactProducts = $query->limit(self::MAX_RESULTS)->get();
+        $fallbackProducts = collect();
+        $resultMode = 'exact';
+        $message = null;
 
-        // Fallback: if strict AI filters return nothing, use keyword-only search
-        // so users still receive relevant results instead of an empty screen.
-        if ($products->isEmpty()) {
-            $fallbackQuery = Product::query()
-                ->with('category')
-                ->where('stock_quantity', '>', 0)
-                ->where('is_available', true);
-
-            if (!empty($filters['keywords']) && is_array($filters['keywords'])) {
-                $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
-                $fallbackQuery->where(function ($q) use ($filters, $op) {
-                    foreach ($filters['keywords'] as $kw) {
-                        $q->orWhere('name', $op, "%{$kw}%")
-                            ->orWhere('description', $op, "%{$kw}%")
-                            ->orWhere('brand', $op, "%{$kw}%");
-                    }
-                });
-            }
-
-            $products = $fallbackQuery
-                ->orderByDesc('stock_quantity')
-                ->limit(30)
+        if ($exactProducts->isEmpty()) {
+            // Relax strict AI filters first (pet_type/age_group), while keeping location and keyword intent.
+            $relaxedProducts = $this->buildRelaxedExactQuery($filters)
+                ->limit(self::MAX_RESULTS)
                 ->get();
+
+            if ($relaxedProducts->isNotEmpty()) {
+                $fallbackProducts = $relaxedProducts;
+                $resultMode = 'fallback';
+                $message = 'No strict exact match found. Showing closest matches with relaxed pet filters.';
+            }
         }
+
+        if ($location !== '' && $exactProducts->isEmpty() && $fallbackProducts->isEmpty()) {
+            $fallbackProducts = $this->buildFallbackQuery($filters)
+                ->limit(self::MAX_RESULTS)
+                ->get();
+            $resultMode = $fallbackProducts->isEmpty() ? 'exact' : 'fallback';
+            $message = $fallbackProducts->isEmpty()
+                ? null
+                : "No exact results found for location '{$location}'. Showing similar products from other locations.";
+        } elseif ($exactProducts->isEmpty() && $fallbackProducts->isEmpty()) {
+            $fallbackProducts = $this->buildFallbackQuery($filters)
+                ->limit(self::MAX_RESULTS)
+                ->get();
+            if ($fallbackProducts->isNotEmpty()) {
+                $resultMode = 'fallback';
+                $message = 'No exact AI matches found. Showing similar products.';
+            }
+        }
+
+        $primaryProducts = $exactProducts->isNotEmpty() ? $exactProducts : $fallbackProducts;
 
         AiSearchLog::query()->create([
             'user_id' => optional(auth('api')->user())->id,
@@ -167,7 +208,7 @@ class AIController extends Controller
             'detected_price_min' => $filters['min_price'] ?? ($filters['price_min'] ?? null),
             'detected_price_max' => $filters['max_price'] ?? ($filters['price_max'] ?? null),
             'confidence' => $filters['confidence'] ?? null,
-            'total_results' => $products->count(),
+            'total_results' => $primaryProducts->count(),
             'filters_payload' => $filters,
         ]);
 
@@ -179,8 +220,116 @@ class AIController extends Controller
                     'semantic_applied' => $semanticApplied,
                     'semantic_weight' => $semanticWeight,
                 ]),
-                'products' => ProductResource::collection($products),
+                'products' => ProductResource::collection($primaryProducts),
+                'exact_results' => ProductResource::collection($exactProducts),
+                'fallback_results' => ProductResource::collection($fallbackProducts),
+                'result_mode' => $resultMode,
+                'message' => $message,
             ],
         ]);
+    }
+
+    private function buildFallbackQuery(array $filters)
+    {
+        $query = Product::query()
+            ->with('category')
+            ->where('stock_quantity', '>', 0)
+            ->where('is_available', true);
+
+        if (!empty($filters['category'])) {
+            $categoryName = $filters['category'];
+            $query->whereHas('category', function ($q) use ($categoryName) {
+                $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+                $q->where('name', $op, '%' . $categoryName . '%');
+            });
+        }
+
+        if (!empty($filters['min_price'])) {
+            $query->where('price', '>=', (float) $filters['min_price']);
+        }
+        if (!empty($filters['max_price'])) {
+            $query->where('price', '<=', (float) $filters['max_price']);
+        }
+        if (!empty($filters['keywords']) && is_array($filters['keywords'])) {
+            $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($filters, $op) {
+                foreach ($filters['keywords'] as $kw) {
+                    $q->orWhere('name', $op, "%{$kw}%")
+                        ->orWhere('description', $op, "%{$kw}%")
+                        ->orWhere('brand', $op, "%{$kw}%");
+                }
+            });
+        }
+
+        return $query->orderByDesc('stock_quantity')->latest('created_at');
+    }
+
+    private function buildRelaxedExactQuery(array $filters)
+    {
+        $query = Product::query()
+            ->with('category')
+            ->where('stock_quantity', '>', 0)
+            ->where('is_available', true);
+
+        if (!empty($filters['category'])) {
+            $categoryName = $filters['category'];
+            $query->whereHas('category', function ($q) use ($categoryName) {
+                $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+                $q->where('name', $op, '%' . $categoryName . '%');
+            });
+        }
+
+        if (!empty($filters['max_price'])) {
+            $query->where('price', '<=', (float) $filters['max_price']);
+        }
+
+        if (!empty($filters['min_price'])) {
+            $query->where('price', '>=', (float) $filters['min_price']);
+        }
+
+        $location = trim((string) ($filters['location'] ?? ''));
+        if ($location !== '') {
+            if (DB::getDriverName() === 'pgsql') {
+                $query->whereRaw('LOWER(TRIM(location)) = LOWER(?)', [$location]);
+            } else {
+                $query->whereRaw('LOWER(TRIM(location)) = ?', [mb_strtolower($location)]);
+            }
+        }
+
+        if (!empty($filters['brand'])) {
+            $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where('brand', $op, '%' . $filters['brand'] . '%');
+        }
+
+        if (!empty($filters['keywords']) && is_array($filters['keywords'])) {
+            $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($filters, $op) {
+                foreach ($filters['keywords'] as $kw) {
+                    $q->orWhere('name', $op, "%{$kw}%")
+                        ->orWhere('description', $op, "%{$kw}%")
+                        ->orWhere('brand', $op, "%{$kw}%");
+                }
+            });
+        }
+
+        return $query->orderByDesc('stock_quantity')->latest('created_at');
+    }
+
+    private function keywordFallbackProducts(string $query)
+    {
+        $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
+        return Product::query()
+            ->with('category')
+            ->where('stock_quantity', '>', 0)
+            ->where('is_available', true)
+            ->where(function ($q) use ($query, $op) {
+                $q->where('name', $op, "%{$query}%")
+                    ->orWhere('description', $op, "%{$query}%")
+                    ->orWhere('brand', $op, "%{$query}%");
+            })
+            ->latest('created_at')
+            ->limit(20)
+            ->get();
     }
 }

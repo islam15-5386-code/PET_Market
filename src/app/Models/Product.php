@@ -13,9 +13,9 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'name', 'slug', 'description',
-        'price', 'stock_quantity', 'images', 'image_url', 'thumbnail_url', 'location', 'is_available',
+        'price', 'stock_quantity', 'images', 'image_url', 'thumbnail_url', 'location', 'is_available', 'is_active',
         'brand', 'sku', 'rating', 'review_count',
-        'pet_type', 'sub_category',
+        'pet_type', 'age_group', 'sub_category', 'tags',
         'ai_generated_title', 'ai_generated_short_description', 'ai_generated_long_description',
         'ai_seo_keywords', 'ai_meta_title', 'ai_meta_description',
         'ai_generated_tags', 'ai_content_generated_at',
@@ -23,8 +23,10 @@ class Product extends Model
 
     protected $casts = [
         'images'       => 'array',
+        'tags'         => 'array',
         'price'        => 'decimal:2',
         'is_available' => 'boolean',
+        'is_active'    => 'boolean',
         'rating'       => 'decimal:2',
         'ai_seo_keywords' => 'array',
         'ai_generated_tags' => 'array',
@@ -54,7 +56,12 @@ class Product extends Model
     // ── Scopes ─────────────────────────────────────────────────────────────────
     public function scopeAvailable($query)
     {
-        return $query->where('is_available', true)->where('stock_quantity', '>', 0);
+        return $query
+            ->where('is_available', true)
+            ->where(function ($q) {
+                $q->whereNull('is_active')->orWhere('is_active', true);
+            })
+            ->where('stock_quantity', '>', 0);
     }
 
     public function scopeSearch($query, string $term)
@@ -80,8 +87,16 @@ class Product extends Model
 
     public function scopeByLocation($query, string $location)
     {
-        $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
-        return $query->where('location', $op, "%{$location}%");
+        $normalized = trim($location);
+        if ($normalized === '') {
+            return $query;
+        }
+
+        if (DB::getDriverName() === 'pgsql') {
+            return $query->whereRaw('LOWER(TRIM(location)) = LOWER(?)', [$normalized]);
+        }
+
+        return $query->whereRaw('LOWER(TRIM(location)) = ?', [mb_strtolower($normalized)]);
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

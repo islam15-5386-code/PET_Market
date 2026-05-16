@@ -13,15 +13,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<string, string> = {
   primary:
-    'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm hover:shadow-md hover:from-orange-600 hover:to-amber-600 active:scale-[0.99] disabled:from-orange-300 disabled:to-amber-300',
+    'bg-gradient-to-r from-amber-600 to-orange-500 text-white shadow-sm hover:shadow-md hover:from-amber-700 hover:to-orange-600 active:scale-[0.98] disabled:from-amber-300 disabled:to-orange-300',
   secondary:
-    'bg-gray-900 text-white shadow-sm hover:bg-gray-800 active:scale-[0.99] disabled:bg-gray-400',
+    'bg-slate-900 text-white shadow-sm hover:bg-slate-800 active:scale-[0.98] disabled:bg-slate-400',
   outline:
-    'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 active:scale-[0.99] disabled:text-gray-400',
+    'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400 active:scale-[0.98] disabled:text-slate-400',
   ghost:
-    'text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:text-gray-400',
+    'text-slate-700 hover:bg-slate-100 active:bg-slate-200 active:scale-[0.98] disabled:text-slate-400',
   danger:
-    'bg-red-600 text-white shadow-sm hover:bg-red-700 active:scale-[0.99] disabled:bg-red-300',
+    'bg-red-600 text-white shadow-sm hover:bg-red-700 active:scale-[0.98] disabled:bg-red-300',
 }
 
 const sizeClasses: Record<string, string> = {
@@ -45,8 +45,9 @@ export function Button({
       disabled={disabled || loading}
       className={clsx(
         'inline-flex items-center justify-center gap-2 font-semibold',
-        'transition-all duration-200 focus:outline-none focus-visible:ring-2',
-        'focus-visible:ring-orange-400 focus-visible:ring-offset-2',
+        'transform-gpu transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out',
+        'motion-safe:hover:shadow-md focus:outline-none focus-visible:ring-2',
+        'focus-visible:ring-amber-400 focus-visible:ring-offset-2',
         'disabled:cursor-not-allowed disabled:shadow-none',
         variantClasses[variant],
         sizeClasses[size],

@@ -39,7 +39,7 @@ return [
     'google' => [
         'client_id'     => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect'      => env('GOOGLE_REDIRECT_URI', '/api/auth/social/google/callback'),
+        'redirect'      => env('GOOGLE_REDIRECT_URI', 'http://localhost:8000/api/auth/google/callback'),
     ],
 
     'facebook' => [
@@ -50,8 +50,8 @@ return [
 
     'ai_service' => [
         'url' => env('AI_SERVICE_URL', 'http://127.0.0.1:8001'),
-        'description_timeout' => env('AI_DESCRIPTION_TIMEOUT', 30),
-        'search_timeout' => env('AI_SEARCH_TIMEOUT', 15),
+        'description_timeout' => env('AI_DESCRIPTION_TIMEOUT', env('AI_TIMEOUT_SECONDS', 30)),
+        'search_timeout' => env('AI_SEARCH_TIMEOUT', env('AI_TIMEOUT_SECONDS', 15)),
         'semantic_search_enabled' => env('AI_SEMANTIC_SEARCH_ENABLED', true),
         'semantic_weight' => (float) env('AI_SEMANTIC_WEIGHT', 0.7),
     ],

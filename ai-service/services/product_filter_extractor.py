@@ -24,6 +24,25 @@ AGE_PATTERNS = {
     'senior': ['senior', 'old'],
 }
 
+LOCATION_PATTERNS = {
+    "Dhaka": ["dhaka"],
+    "Chattogram": ["chattogram", "chittagong"],
+    "Sylhet": ["sylhet"],
+    "Rajshahi": ["rajshahi"],
+    "Khulna": ["khulna"],
+    "Barishal": ["barishal", "barisal"],
+    "Rangpur": ["rangpur"],
+    "Mymensingh": ["mymensingh"],
+    "Gazipur": ["gazipur"],
+    "Narayanganj": ["narayanganj"],
+    "Mirpur": ["mirpur"],
+    "Uttara": ["uttara"],
+    "Dhanmondi": ["dhanmondi"],
+    "Banani": ["banani"],
+    "Gulshan": ["gulshan"],
+    "Mohammadpur": ["mohammadpur", "mohammedpur"],
+}
+
 
 def _detect_map(text: str, mapping: dict[str, list[str]]):
     for k, terms in mapping.items():
@@ -38,6 +57,7 @@ def extract_filters(message: str):
     pet_type = _detect_map(text, PET_PATTERNS)
     category = _detect_map(text, CATEGORY_PATTERNS)
     age_group = _detect_map(text, AGE_PATTERNS)
+    location = _detect_map(text, LOCATION_PATTERNS)
 
     price_max = None
     price_min = None
@@ -61,6 +81,7 @@ def extract_filters(message: str):
         'pet_type': pet_type,
         'category': category,
         'age_group': age_group,
+        'location': location,
         'price_min': price_min,
         'price_max': price_max,
     }

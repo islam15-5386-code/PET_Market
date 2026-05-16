@@ -1,5 +1,7 @@
 <?php
 
+$frontendUrl = env('APP_FRONTEND_URL', env('FRONTEND_URL', 'http://localhost:3000'));
+
 return [
 
     'paths' => ['api/*'],
@@ -11,9 +13,8 @@ return [
         'http://localhost:3000',
         'http://127.0.0.1:3000',
 
-        // Production — replace with your actual frontend domain
-        'https://petmarketplace.com',
-        'https://www.petmarketplace.com',
+        // Production frontend (from env)
+        rtrim($frontendUrl, '/'),
     ],
 
     'allowed_origins_patterns' => [

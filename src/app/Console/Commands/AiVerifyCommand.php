@@ -18,7 +18,7 @@ class AiVerifyCommand extends Command
         $this->info("Checking AI base URL: {$base}");
 
         try {
-            $health = Http::timeout(10)->get("{$base}/health");
+            $health = Http::timeout(10)->get("{$base}/ai/health");
             $this->line('Health endpoint: ' . $health->status());
             if (!$health->successful()) {
                 $ok = false;
@@ -40,7 +40,7 @@ class AiVerifyCommand extends Command
         }
 
         try {
-            $chat = Http::timeout(15)->post("{$base}/chatbot/message", [
+            $chat = Http::timeout(15)->post("{$base}/ai/pet-chatbot/message", [
                 'message' => 'my cat is not eating',
                 'session_id' => (string) \Illuminate\Support\Str::uuid(),
                 'conversation_history' => [],
@@ -80,4 +80,3 @@ class AiVerifyCommand extends Command
         return self::FAILURE;
     }
 }
-

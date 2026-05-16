@@ -2,12 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes softPulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmerX {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 @layer base {
   :root {
-    --brand: #f97316;
-    --brand-dark: #c2410c;
-    --ink: #111827;
-    --surface: #ffffff;
+    --brand: #d97706;
+    --brand-dark: #92400e;
+    --ink: #141414;
+    --surface: #f8f6f2;
+    --surface-muted: #f2eee8;
+    --line: #e5e9f1;
+    --headline: var(--font-jakarta), "Segoe UI", sans-serif;
+    --body: var(--font-manrope), "Segoe UI", sans-serif;
   }
 
   * {
@@ -20,10 +44,16 @@
 
   body {
     @apply text-gray-900 antialiased;
+    font-family: var(--body);
     background:
-      radial-gradient(circle at 10% 0%, rgba(255, 237, 213, 0.65), transparent 35%),
-      radial-gradient(circle at 100% 30%, rgba(254, 243, 199, 0.6), transparent 30%),
-      linear-gradient(180deg, #fffdf9 0%, #f8fafc 65%, #f3f4f6 100%);
+      radial-gradient(1200px 420px at 100% -10%, rgba(251, 191, 36, 0.16), transparent 60%),
+      radial-gradient(1000px 380px at 0% 0%, rgba(249, 115, 22, 0.09), transparent 62%),
+      linear-gradient(180deg, #fdfbf7 0%, #f9f6f0 60%, #f4f0e9 100%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--headline);
+    letter-spacing: 0;
   }
 
   input,
@@ -36,19 +66,46 @@
 
 @layer components {
   .auth-card {
-    @apply w-full max-w-md mx-auto bg-white/95 backdrop-blur rounded-2xl shadow-xl border border-orange-100 p-8;
+    @apply w-full max-w-md mx-auto bg-white/95 backdrop-blur rounded-2xl shadow-xl border p-8;
+    border-color: var(--line);
   }
 
   .link-brand {
-    @apply text-orange-600 hover:text-orange-700 font-medium transition-colors;
+    @apply font-medium transition-colors;
+    color: var(--brand-dark);
+  }
+
+  .link-brand:hover {
+    color: var(--brand);
   }
 
   .surface-card {
-    @apply rounded-2xl border border-gray-200/80 bg-white/95 shadow-sm;
+    @apply rounded-2xl border bg-white/95 shadow-sm;
+    border-color: var(--line);
   }
 
   .section-shell {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .app-shell {
+    background:
+      radial-gradient(1100px 380px at 50% -12%, rgba(251, 191, 36, 0.12), transparent 65%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0));
+  }
+
+  .app-main {
+    position: relative;
+  }
+
+  .app-main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(700px 240px at 100% 18%, rgba(234, 88, 12, 0.06), transparent 70%),
+      radial-gradient(760px 260px at 0% 40%, rgba(245, 158, 11, 0.05), transparent 70%);
   }
 }
 
@@ -58,10 +115,45 @@
   }
 
   .glow-orange {
-    box-shadow: 0 14px 35px -14px rgba(249, 115, 22, 0.45);
+    box-shadow: 0 16px 38px -18px rgba(217, 119, 6, 0.38);
   }
 
   .ring-brand {
     @apply ring-2 ring-orange-300 ring-offset-2 ring-offset-white;
+  }
+
+  .motion-float {
+    animation: floatY 5s ease-in-out infinite;
+  }
+
+  .motion-pulse-soft {
+    animation: softPulse 3s ease-in-out infinite;
+  }
+
+  .motion-fade-up {
+    animation: fadeSlideUp 0.7s ease-out both;
+  }
+
+  .stagger-1 { animation-delay: 0.08s; }
+  .stagger-2 { animation-delay: 0.16s; }
+  .stagger-3 { animation-delay: 0.24s; }
+  .stagger-4 { animation-delay: 0.32s; }
+
+  .dynamic-surface {
+    background:
+      radial-gradient(80% 120% at 10% 0%, rgba(251, 191, 36, 0.12), transparent 60%),
+      radial-gradient(80% 120% at 100% 20%, rgba(56, 189, 248, 0.11), transparent 60%),
+      rgba(255, 255, 255, 0.92);
+  }
+
+  .shimmer {
+    background-image: linear-gradient(
+      110deg,
+      rgba(226, 232, 240, 0.75) 8%,
+      rgba(248, 250, 252, 0.95) 18%,
+      rgba(226, 232, 240, 0.75) 33%
+    );
+    background-size: 200% 100%;
+    animation: shimmerX 1.5s linear infinite;
   }
 }

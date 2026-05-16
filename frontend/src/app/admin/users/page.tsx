@@ -3,6 +3,8 @@
 import React from 'react'
 import { Search, UserCheck, UserX, ShieldCheck } from 'lucide-react'
 import { Spinner } from '@/components/ui/Spinner'
+import { PageHeader } from '@/components/ui/PageHeader'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { useAdminUsers } from '@/hooks/admin/useAdmin'
 
 export default function AdminUsersPage() {
@@ -13,7 +15,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-gray-900">Users</h1>
+      <PageHeader title="Users" description="Monitor user accounts, roles, and account status actions." />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
@@ -23,14 +25,14 @@ export default function AdminUsersPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             placeholder="Search name or email..."
-            className="pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 w-56"
+            className="w-56 rounded-xl border border-slate-300 py-2 pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
           />
         </div>
 
         <select
           value={status}
           onChange={(e) => { setStatus(e.target.value); setPage(1) }}
-          className="text-sm border border-gray-300 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+          className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -39,43 +41,47 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_34px_-28px_rgba(15,23,42,.7)]">
         {loading ? (
           <div className="flex items-center justify-center py-20"><Spinner /></div>
+        ) : users.length === 0 ? (
+          <div className="p-4">
+            <EmptyState title="No users found" description="Try adjusting filters or search query." />
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50 text-left">
-                  <th className="px-4 py-3 font-medium text-gray-500">User</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Role</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Orders</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Joined</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 font-medium text-gray-500 text-right">Action</th>
+                <tr className="border-b border-slate-100 bg-slate-50/80 text-left">
+                  <th className="px-4 py-3 font-medium text-slate-500">User</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Role</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Orders</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Joined</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Status</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-500">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-slate-50">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={u.id} className="transition-colors hover:bg-slate-50">
                     <td className="px-4 py-3">
                       <div>
-                        <p className="font-medium text-gray-900">{u.name}</p>
-                        <p className="text-xs text-gray-500">{u.email}</p>
+                        <p className="font-medium text-slate-900">{u.name}</p>
+                        <p className="text-xs text-slate-500">{u.email}</p>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${
                         u.role === 'admin'
-                          ? 'bg-orange-100 text-orange-700'
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-slate-100 text-slate-600'
                       }`}>
                         {u.role === 'admin' && <ShieldCheck className="h-3 w-3" />}
                         {u.role}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{u.orders_count}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">
+                    <td className="px-4 py-3 text-slate-700">{u.orders_count}</td>
+                    <td className="px-4 py-3 text-xs text-slate-500">
                       {new Date(u.created_at).toLocaleDateString('en-GB', {
                         day: 'numeric', month: 'short', year: 'numeric',
                       })}
@@ -117,17 +123,17 @@ export default function AdminUsersPage() {
 
         {/* Pagination */}
         {meta && meta.last_page > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
+          <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3">
+            <p className="text-xs text-slate-500">
               {meta.total} users · Page {meta.current_page} of {meta.last_page}
             </p>
             <div className="flex gap-2">
               <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}
-                className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50">
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs disabled:opacity-40 hover:bg-slate-50">
                 Prev
               </button>
               <button disabled={page >= meta.last_page} onClick={() => setPage((p) => p + 1)}
-                className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50">
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs disabled:opacity-40 hover:bg-slate-50">
                 Next
               </button>
             </div>

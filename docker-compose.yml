@@ -12,7 +12,7 @@ services:
       - ./src:/var/www
       - ./src/storage:/var/www/storage   # persist storage across rebuilds
     environment:
-      - PHP_OPCACHE_ENABLE=0             # disabled in dev for hot reload
+      - PHP_OPCACHE_ENABLE=1
     networks:
       - petmarket_network
     depends_on:
@@ -87,9 +87,10 @@ services:
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api
       - NEXT_PUBLIC_APP_NAME=Pet Marketplace
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm ci; fi && npm run dev"
     networks:
       - petmarket_network
     depends_on:
@@ -103,12 +104,14 @@ services:
     working_dir: /app
     volumes:
       - ./ai-service:/app
+      - ai_venv:/opt/venv
+      - ai_pip_cache:/root/.cache/pip
     ports:
       - "8001:8001"
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8001"
+    command: sh -c "if [ ! -x /opt/venv/bin/python ]; then python -m venv /opt/venv; fi && . /opt/venv/bin/activate && if [ ! -f /opt/venv/.req_installed ] || [ requirements.txt -nt /opt/venv/.req_installed ]; then pip install -r requirements.txt && touch /opt/venv/.req_installed; fi && uvicorn main:app --host 0.0.0.0 --port 8001"
     networks:
       - petmarket_network
     depends_on:
@@ -119,6 +122,10 @@ volumes:
   postgres_data:
     driver: local
   pgadmin_data:
+    driver: local
+  ai_venv:
+    driver: local
+  ai_pip_cache:
     driver: local
 
 # ── Network ───────────────────────────────────────────────────────────────────

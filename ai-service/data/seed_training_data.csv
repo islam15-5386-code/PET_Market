@@ -1,0 +1,11 @@
+text,intent
+puppy shampoo in dhaka under 1000,product_search
+grooming items for persian cat in dhaka,product_search
+kitten food under 1000 bdt,product_search
+bird food in mirpur,product_search
+amar biral khabar khacche na,health_warning
+my dog is vomiting,emergency_warning
+suggest a food for my kitten,food_advice
+how often should i groom my dog,grooming_advice
+recommend products for my cat,product_recommendation
+how to take care of a puppy,general_pet_care

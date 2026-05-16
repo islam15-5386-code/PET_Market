@@ -99,15 +99,15 @@ function getProductHref(p: ProductRec): string {
 function TypingIndicator() {
   return (
     <div className="flex items-start gap-2">
-      <div className="mt-0.5 grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-sm">
+      <div className="mt-0.5 grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-sm">
         <Bot className="h-4 w-4" />
       </div>
-      <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-3 py-2 shadow-sm">
-        <p className="text-xs font-medium text-gray-500">PetCare AI is thinking...</p>
+      <div className="rounded-2xl rounded-tl-sm border border-orange-100 bg-white px-3 py-2 shadow-sm">
+        <p className="text-xs font-medium text-orange-700/80">PetCare AI is thinking...</p>
         <div className="mt-1 flex items-center gap-1">
-          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-indigo-400 [animation-delay:-0.3s]" />
-          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-indigo-400 [animation-delay:-0.15s]" />
-          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-indigo-400" />
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-orange-400 [animation-delay:-0.3s]" />
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-orange-400 [animation-delay:-0.15s]" />
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-orange-400" />
         </div>
       </div>
     </div>
@@ -282,29 +282,29 @@ export function ChatbotWidget() {
         <div className="fixed inset-0 z-50 flex items-end justify-end sm:bottom-5 sm:right-5 sm:inset-auto">
           <div className="absolute inset-0 bg-black/20 sm:hidden" onClick={() => setOpen(false)} />
 
-          <div className="relative z-10 flex h-[88dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-gray-200 bg-white/95 shadow-2xl backdrop-blur sm:h-[700px] sm:max-h-[86vh] sm:w-[420px] sm:rounded-3xl">
-            <div className="border-b border-gray-100 bg-gradient-to-r from-orange-50 via-white to-indigo-50 px-4 py-3">
+          <div className="relative z-10 flex h-[88dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-orange-100 bg-white/95 shadow-2xl backdrop-blur sm:h-[700px] sm:max-h-[86vh] sm:w-[420px] sm:rounded-3xl">
+            <div className="border-b border-orange-100 bg-gradient-to-r from-orange-100 via-amber-50 to-white px-4 py-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2">
-                  <div className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-sm">
+                  <div className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-sm">
                     <PawPrint className="h-5 w-5" />
                     <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500" />
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-gray-900">PetCare AI Assistant</p>
-                    <p className="truncate text-xs text-gray-500">Care tips, product help & safe guidance</p>
+                    <p className="truncate text-xs text-orange-700/75">Care tips, product help & safe guidance</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setOpen(false)}
-                  className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                  className="rounded-lg p-1.5 text-orange-400 transition hover:bg-orange-100 hover:text-orange-700"
                   aria-label="Close chatbot"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
               <div className="mt-2">
-                <AIChip label="PetCare AI can share general guidance, not veterinary diagnosis." className="text-[11px]" />
+                <AIChip label="PetCare AI can share general guidance, not veterinary diagnosis." className="border-orange-200 bg-orange-50 text-[11px] text-orange-800" />
               </div>
             </div>
 
@@ -317,7 +317,7 @@ export function ChatbotWidget() {
                   <div key={m.id} className={`flex ${isAI ? 'justify-start' : 'justify-end'}`}>
                     <div className={`max-w-[88%] ${isAI ? '' : 'items-end'}`}>
                       {isAI && (
-                        <div className="mb-1 flex items-center gap-1.5 pl-1 text-[11px] text-gray-400">
+                        <div className="mb-1 flex items-center gap-1.5 pl-1 text-[11px] text-orange-500/80">
                           <Sparkles className="h-3 w-3" /> PetCare AI
                         </div>
                       )}
@@ -372,7 +372,7 @@ export function ChatbotWidget() {
                     key={q.label}
                     type="button"
                     onClick={() => onSend(q.label)}
-                    className="shrink-0 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-medium text-orange-700 transition hover:-translate-y-px hover:bg-orange-100"
+                    className="shrink-0 rounded-full border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-3 py-1.5 text-xs font-medium text-orange-700 transition hover:border-orange-300 hover:bg-orange-100"
                   >
                     <span className="mr-1 text-[10px] text-orange-500">{q.group}</span>
                     {q.label}
@@ -393,14 +393,14 @@ export function ChatbotWidget() {
                   placeholder="Ask about food, grooming, care, or products..."
                   rows={1}
                   aria-label="Chat message input"
-                  className="max-h-28 min-h-[42px] w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200"
+                  className="max-h-28 min-h-[42px] w-full resize-none rounded-2xl border border-orange-200/80 bg-orange-50/40 px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-200"
                 />
                 <button
                   type="button"
                   onClick={() => onSend()}
                   disabled={!canSend}
                   aria-label="Send message"
-                  className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm transition hover:scale-[1.03] disabled:cursor-not-allowed disabled:opacity-55"
+                  className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-55"
                 >
                   {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Send className="h-4 w-4" />}
                 </button>

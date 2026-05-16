@@ -53,10 +53,10 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex flex-col bg-white rounded-2xl border border-gray-200 hover:border-orange-200 hover:shadow-md transition-all duration-200 overflow-hidden"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_12px_24px_-24px_rgba(15,23,42,.8)] transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-200 hover:shadow-[0_20px_38px_-24px_rgba(15,23,42,.6)]"
     >
       {/* Image */}
-      <div className="relative aspect-square bg-gray-100 overflow-hidden">
+      <div className="relative aspect-square overflow-hidden bg-slate-100">
         {imgSrc ? (
           <Image
             src={imgSrc}
@@ -86,7 +86,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {isOutOfStock && (
           <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center">
-            <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full">
+            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-800">
               Out of Stock
             </span>
           </div>
@@ -94,7 +94,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Category badge */}
         {product.category && (
-          <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-xs font-medium text-gray-700 px-2 py-0.5 rounded-full">
+          <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-slate-700 backdrop-blur-sm">
             {product.category.icon} {product.category.name}
           </span>
         )}
@@ -102,37 +102,39 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="flex flex-col flex-1 p-4 gap-2">
-        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900 transition-colors group-hover:text-amber-700">
           {product.name}
         </h3>
 
         {product.location && (
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1 text-xs text-slate-500">
             <MapPin className="h-3 w-3 shrink-0" />
             <span>{product.location}</span>
           </div>
         )}
 
         <div className="mt-auto flex items-center justify-between pt-2">
-          <span className="text-base font-bold text-gray-900">
+          <span className="text-base font-bold text-slate-900">
             {formatBDT(product.price)}
           </span>
 
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock || adding}
+            aria-busy={adding}
             className={clsx(
-              'flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all',
+              'flex h-8 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold',
+              'transform-gpu transition-[background-color,box-shadow,transform] duration-200 ease-out',
               added
                 ? 'bg-green-500 text-white'
                 : isOutOfStock
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-orange-500 text-white hover:bg-orange-600 active:scale-95',
+                : 'bg-amber-600 text-white hover:bg-amber-700 hover:shadow-sm active:scale-[0.98]',
             )}
             aria-label="Add to cart"
           >
             <ShoppingCart className="h-3.5 w-3.5" />
-            {added ? 'Added!' : adding ? '...' : 'Add'}
+            {added ? 'Added!' : adding ? 'Adding' : 'Add'}
           </button>
         </div>
       </div>

@@ -41,6 +41,8 @@ class ProductController extends Controller
                     'min_price'   => $request->min_price ? (float) $request->min_price : null,
                     'max_price'   => $request->max_price ? (float) $request->max_price : null,
                     'location'    => $request->location,
+                    'pet_type'    => $request->pet_type,
+                    'age_group'   => $request->age_group,
                     'sort'        => $request->get('sort', 'newest'),
                 ],
             ],
@@ -63,6 +65,18 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'data'    => ['product' => new ProductDetailResource($product)],
+        ]);
+    }
+
+    // ── GET /api/ai/suggestions ───────────────────────────────────────────────
+
+    public function aiSuggestions(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'suggestions' => $this->productService->aiSuggestions(8),
+            ],
         ]);
     }
 }

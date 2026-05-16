@@ -39,6 +39,9 @@ Route::prefix('auth')->name('auth.')->group(function () {
 });
 
 // ── Social OAuth (Google / Facebook) ─────────────────────────────────────────
+Route::get('auth/google/redirect', [SocialAuthController::class, 'googleRedirect'])->name('auth.google.redirect');
+Route::get('auth/google/callback', [SocialAuthController::class, 'googleCallback'])->name('auth.google.callback');
+
 Route::prefix('auth/social')->name('auth.social.')->group(function () {
     Route::get('{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('redirect');
     Route::get('{provider}/callback', [SocialAuthController::class, 'callback'])->name('callback');
@@ -48,6 +51,7 @@ Route::prefix('auth/social')->name('auth.social.')->group(function () {
 Route::get('categories',      [CategoryController::class, 'index'])->name('categories.index');
 Route::get('products',        [ProductController::class, 'index'])->name('products.index');
 Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('ai/suggestions', [ProductController::class, 'aiSuggestions'])->name('ai.suggestions');
 Route::post('ai/product-search', [AIController::class, 'productSearch'])->name('ai.product-search');
 Route::post('ai-search', [AIController::class, 'productSearch'])->name('ai.search');
 Route::post('ai/semantic-search', [AIController::class, 'productSearch'])->name('ai.semantic-search');

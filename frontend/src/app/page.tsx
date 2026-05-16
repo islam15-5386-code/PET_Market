@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Bot, BrainCircuit, ShieldCheck, Sparkles, Store, Truck } from 'lucide-react'
 import { CategoryCard } from '@/components/product/CategoryCard'
 import { ProductCard } from '@/components/product/ProductCard'
@@ -14,13 +15,25 @@ import { useProducts } from '@/hooks/useProducts'
 export default function HomePage() {
   const { categories, loading: catLoading } = useCategories()
   const { products: featured, loading: prodLoading } = useProducts({ sort: 'newest', per_page: 8 })
+  const heroImage =
+    'https://images.pexels.com/photos/6568501/pexels-photo-6568501.jpeg?auto=compress&cs=tinysrgb&w=1600'
+  const heroFallback = '/placeholder-product.png'
 
   return (
     <div className="pb-16">
       <section className="section-shell pt-12 sm:pt-16">
-        <div className="relative overflow-hidden rounded-3xl border border-orange-100 bg-gradient-to-br from-orange-500 via-orange-500 to-amber-500 px-6 py-12 text-white shadow-xl sm:px-10 sm:py-16">
-          <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute -left-10 -bottom-16 h-56 w-56 rounded-full bg-amber-200/20 blur-2xl" />
+        <div className="motion-fade-up relative overflow-hidden rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-600 via-orange-500 to-orange-400 px-6 py-12 text-white shadow-2xl sm:px-10 sm:py-16">
+          <Image
+            src={heroImage}
+            alt="Happy pets with premium pet care and shopping experience"
+            fill
+            priority
+            className="object-cover opacity-25"
+            onError={(e) => {
+              e.currentTarget.src = heroFallback
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-900/58 via-orange-700/45 to-amber-500/45" />
 
           <div className="relative z-10 grid gap-8 lg:grid-cols-2 lg:items-center">
             <div>
@@ -33,7 +46,7 @@ export default function HomePage() {
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/products" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-orange-700 transition hover:bg-orange-50">
+                <Link href="/products" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50">
                   Explore Products <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/products" className="inline-flex items-center gap-2 rounded-xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20">
@@ -50,7 +63,7 @@ export default function HomePage() {
                 { icon: Store, title: 'Seller Productivity', desc: 'AI-generated product descriptions' },
                 { icon: ShieldCheck, title: 'Safety Focused', desc: 'Vet warning for health-risk queries' },
               ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="rounded-2xl border border-white/25 bg-white/15 p-4 backdrop-blur">
+                <div key={title} className="motion-fade-up rounded-2xl border border-white/30 bg-white/15 p-4 backdrop-blur-md">
                   <Icon className="h-5 w-5 text-white" />
                   <p className="mt-2 text-sm font-semibold text-white">{title}</p>
                   <p className="mt-1 text-xs text-orange-100">{desc}</p>
@@ -68,8 +81,8 @@ export default function HomePage() {
           { icon: Sparkles, title: 'AI-first Experience', desc: 'Search, chatbot, and content AI' },
           { icon: Store, title: 'Seller Friendly', desc: 'Admin tools for productivity' },
         ].map(({ icon: Icon, title, desc }) => (
-          <div key={title} className="surface-card flex items-center gap-3 p-4">
-            <div className="grid h-11 w-11 place-items-center rounded-xl bg-orange-100 text-orange-700"><Icon className="h-5 w-5" /></div>
+          <div key={title} className="motion-fade-up dynamic-surface surface-card flex items-center gap-3 p-4 shadow-[0_12px_28px_-22px_rgba(15,23,42,.55)]">
+            <div className="grid h-11 w-11 place-items-center rounded-xl bg-amber-100 text-amber-700"><Icon className="h-5 w-5" /></div>
             <div>
               <p className="text-sm font-semibold text-gray-900">{title}</p>
               <p className="text-xs text-gray-500">{desc}</p>
@@ -80,8 +93,8 @@ export default function HomePage() {
 
       <section className="section-shell mt-14">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Shop by Category</h2>
-          <Link href="/products" className="text-sm font-medium text-orange-600 hover:text-orange-700">View all</Link>
+          <h2 className="text-2xl font-bold text-slate-900">Shop by Category</h2>
+          <Link href="/products" className="text-sm font-medium text-amber-700 hover:text-amber-800">View all</Link>
         </div>
         {catLoading ? (
           <Spinner className="py-10" />
@@ -96,8 +109,8 @@ export default function HomePage() {
 
       <section className="section-shell mt-14">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
-          <Link href="/products?sort=newest" className="text-sm font-medium text-orange-600 hover:text-orange-700">See all</Link>
+          <h2 className="text-2xl font-bold text-slate-900">Featured Products</h2>
+          <Link href="/products?sort=newest" className="text-sm font-medium text-amber-700 hover:text-amber-800">See all</Link>
         </div>
         {prodLoading ? (
           <Spinner className="py-10" />
@@ -109,10 +122,10 @@ export default function HomePage() {
       </section>
 
       <section className="section-shell mt-14">
-        <div className="rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-orange-50 p-7 sm:p-9">
-          <p className="text-sm font-semibold text-indigo-700">Why choose Pet Marketplace</p>
-          <h3 className="mt-2 text-2xl font-bold text-gray-900">Enterprise-grade marketplace experience with AI at every layer.</h3>
-          <p className="mt-2 max-w-3xl text-sm text-gray-600">From product discovery to safe pet-care guidance and seller content generation, everything is designed to be fast, helpful, and production-ready.</p>
+        <div className="rounded-3xl border border-slate-200 bg-gradient-to-r from-sky-50 via-white to-amber-50 p-7 sm:p-9">
+          <p className="text-sm font-semibold text-sky-700">Why choose Pet Marketplace</p>
+          <h3 className="mt-2 text-2xl font-bold text-slate-900">Enterprise-grade marketplace experience with AI at every layer.</h3>
+          <p className="mt-2 max-w-3xl text-sm text-slate-600">From product discovery to safe pet-care guidance and seller content generation, everything is designed to be fast, helpful, and production-ready.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link href="/products" className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">Start Shopping</Link>
             <Link href="/register" className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">Create Account</Link>

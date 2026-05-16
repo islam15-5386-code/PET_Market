@@ -1,20 +1,18 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
-from schemas.product_search_schema import ProductSearchRequest, ProductSearchAIResponse
+from schemas.product_search_schema import ProductSearchParseRequest, ProductSearchParseResponse
 from services.query_parser import parse_query
-
 
 router = APIRouter(prefix="/ai", tags=["AI Product Search"])
 
 
-@router.post("/product-search", response_model=ProductSearchAIResponse)
-def product_search(payload: ProductSearchRequest):
-    try:
-        parsed = parse_query(payload.query)
-        parsed["min_price"] = parsed.get("price_min")
-        parsed["max_price"] = parsed.get("price_max")
-        parsed["success"] = True
-        parsed["query"] = payload.query
-        return ProductSearchAIResponse(**parsed)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"AI parsing failed: {exc}")
+@router.post("/product-search/parse", response_model=ProductSearchParseResponse)
+def product_search_parse(payload: ProductSearchParseRequest):
+    parsed = parse_query(payload.query)
+    return ProductSearchParseResponse(**parsed)
+
+
+@router.post("/product-search", response_model=ProductSearchParseResponse)
+def product_search_legacy(payload: ProductSearchParseRequest):
+    parsed = parse_query(payload.query)
+    return ProductSearchParseResponse(**parsed)

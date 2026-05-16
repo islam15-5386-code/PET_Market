@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { Package, Plus, Search, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { useAdminProducts } from '@/hooks/admin/useAdmin'
 
 export default function AdminProductsPage() {
@@ -27,15 +29,17 @@ export default function AdminProductsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-        <Link href="/admin/products/new">
-          <Button size="sm">
-            <Plus className="h-4 w-4" /> New Product
-          </Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Products"
+        description="Manage catalog items, stock, visibility, and pricing."
+        actions={(
+          <Link href="/admin/products/new">
+            <Button size="sm">
+              <Plus className="h-4 w-4" /> New Product
+            </Button>
+          </Link>
+        )}
+      />
 
       {/* Search */}
       <div className="relative max-w-sm">
@@ -47,40 +51,39 @@ export default function AdminProductsPage() {
             if (e.key === 'Enter') handleSearch(searchInput)
           }}
           placeholder="Search products..."
-          className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+          className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_34px_-28px_rgba(15,23,42,.7)]">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Spinner />
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-2">
-            <Package className="h-10 w-10" />
-            <p className="text-sm">No products found</p>
+          <div className="p-4">
+            <EmptyState title="No products found" description="Try another search term or create a new product." icon={<Package className="h-7 w-7" />} />
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50 text-left">
-                  <th className="px-4 py-3 font-medium text-gray-500">Product</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Category</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Price</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Stock</th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 font-medium text-gray-500 text-right">Actions</th>
+                <tr className="border-b border-slate-100 bg-slate-50/80 text-left">
+                  <th className="px-4 py-3 font-medium text-slate-500">Product</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Category</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Price</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Stock</th>
+                  <th className="px-4 py-3 font-medium text-slate-500">Status</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-500">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-slate-50">
                 {products.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={p.id} className="transition-colors hover:bg-slate-50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                           {p.primary_image ? (
                             <Image
                               src={p.primary_image}
@@ -99,23 +102,23 @@ export default function AdminProductsPage() {
                             </div>
                           )}
                         </div>
-                        <span className="font-medium text-gray-900 line-clamp-1 max-w-[200px]">
+                        <span className="max-w-[200px] line-clamp-1 font-medium text-slate-900">
                           {p.name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-slate-500">
                       {p.category ? (
                         <span>{p.category.icon} {p.category.name}</span>
                       ) : '—'}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">
+                    <td className="px-4 py-3 font-medium text-slate-900">
                       ৳{Number(p.price).toLocaleString()}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`font-semibold ${
                         p.stock_quantity === 0 ? 'text-red-600' :
-                        p.stock_quantity <= 5 ? 'text-amber-600' : 'text-gray-900'
+                        p.stock_quantity <= 5 ? 'text-amber-600' : 'text-slate-900'
                       }`}>
                         {p.stock_quantity}
                       </span>
@@ -123,8 +126,8 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                         p.is_available
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-500'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-slate-100 text-slate-500'
                       }`}>
                         {p.is_available ? 'Available' : 'Hidden'}
                       </span>
@@ -132,14 +135,14 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
                         <Link href={`/admin/products/${p.id}`}>
-                          <button className="p-1.5 rounded-lg text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors">
+                          <button className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-amber-50 hover:text-amber-700">
                             <Pencil className="h-4 w-4" />
                           </button>
                         </Link>
                         <button
                           onClick={() => handleDelete(p.id, p.name)}
                           disabled={deletingId === p.id}
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40"
+                          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -154,22 +157,22 @@ export default function AdminProductsPage() {
 
         {/* Pagination */}
         {meta && meta.last_page > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
+          <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3">
+            <p className="text-xs text-slate-500">
               {meta.total} products · Page {meta.current_page} of {meta.last_page}
             </p>
             <div className="flex gap-2">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs disabled:opacity-40 hover:bg-slate-50"
               >
                 Prev
               </button>
               <button
                 disabled={page >= meta.last_page}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs disabled:opacity-40 hover:bg-slate-50"
               >
                 Next
               </button>

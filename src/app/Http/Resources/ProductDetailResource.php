@@ -49,6 +49,15 @@ class ProductDetailResource extends JsonResource
 
     private function resolveAllImageUrls(): array
     {
+        if (!empty($this->image_url)) {
+            $base = [(string) $this->image_url];
+            if (!empty($this->images) && is_array($this->images)) {
+                $rest = array_values(array_filter($this->images, fn ($img) => $img !== $this->image_url));
+                return array_values(array_unique(array_merge($base, $rest)));
+            }
+            return $base;
+        }
+
         if (empty($this->images)) {
             $imageService = app(ProductImageService::class);
             return $imageService->getMultipleImages(
