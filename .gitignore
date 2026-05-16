@@ -10,6 +10,16 @@ src/storage/framework/views/*
 src/bootstrap/cache/*.php
 src/.phpunit.result.cache
 
+# ── Legacy backend runtime artifacts ──────────────────────────────────────────
+backend/vendor/
+backend/.env
+backend/database/database.sqlite
+backend/storage/logs/*.log
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*.php
+
 # ── Next.js ───────────────────────────────────────────────────────────────────
 frontend/node_modules/
 frontend/.next/
