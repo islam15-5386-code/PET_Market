@@ -9,7 +9,7 @@ class HistoryItem(BaseModel):
 
 
 class ChatbotRequest(BaseModel):
-    message: str = Field(..., min_length=2, max_length=2000)
+    message: str = Field(..., min_length=1, max_length=2000)
     session_id: str | None = Field(default=None, max_length=100)
     conversation_history: list[HistoryItem] = []
 

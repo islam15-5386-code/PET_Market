@@ -60,20 +60,14 @@ class AIController extends Controller
             ], 502);
         }
 
-        $filters = $aiResponse->json();
+        $filters = $this->normalizeSearchFilters($aiResponse->json() ?? []);
 
         $query = Product::query()
             ->with('category')
             ->where('stock_quantity', '>', 0)
             ->where('is_available', true);
 
-        if (!empty($filters['category'])) {
-            $categoryName = $filters['category'];
-            $query->whereHas('category', function ($q) use ($categoryName) {
-                $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
-                $q->where('name', $op, '%' . $categoryName . '%');
-            });
-        }
+        $this->applyCategoryFilter($query, $filters);
 
         if (!empty($filters['max_price'])) {
             $query->where('price', '<=', (float) $filters['max_price']);
@@ -236,12 +230,11 @@ class AIController extends Controller
             ->where('stock_quantity', '>', 0)
             ->where('is_available', true);
 
-        if (!empty($filters['category'])) {
-            $categoryName = $filters['category'];
-            $query->whereHas('category', function ($q) use ($categoryName) {
-                $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
-                $q->where('name', $op, '%' . $categoryName . '%');
-            });
+        $this->applyCategoryFilter($query, $filters);
+
+        if (!empty($filters['pet_type'])) {
+            $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where('pet_type', $op, $filters['pet_type']);
         }
 
         if (!empty($filters['min_price'])) {
@@ -271,13 +264,7 @@ class AIController extends Controller
             ->where('stock_quantity', '>', 0)
             ->where('is_available', true);
 
-        if (!empty($filters['category'])) {
-            $categoryName = $filters['category'];
-            $query->whereHas('category', function ($q) use ($categoryName) {
-                $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
-                $q->where('name', $op, '%' . $categoryName . '%');
-            });
-        }
+        $this->applyCategoryFilter($query, $filters);
 
         if (!empty($filters['max_price'])) {
             $query->where('price', '<=', (float) $filters['max_price']);
@@ -331,5 +318,90 @@ class AIController extends Controller
             ->latest('created_at')
             ->limit(20)
             ->get();
+    }
+
+    private function normalizeSearchFilters(array $filters): array
+    {
+        if (isset($filters['price_max']) && !isset($filters['max_price'])) {
+            $filters['max_price'] = $filters['price_max'];
+        }
+
+        if (isset($filters['price_min']) && !isset($filters['min_price'])) {
+            $filters['min_price'] = $filters['price_min'];
+        }
+
+        if (isset($filters['max_price']) && !isset($filters['price_max'])) {
+            $filters['price_max'] = $filters['max_price'];
+        }
+
+        if (isset($filters['min_price']) && !isset($filters['price_min'])) {
+            $filters['price_min'] = $filters['min_price'];
+        }
+
+        return $filters;
+    }
+
+    private function applyCategoryFilter($query, array $filters): void
+    {
+        if (empty($filters['category']) && empty($filters['pet_type'])) {
+            return;
+        }
+
+        $categorySlug = $this->resolveMarketplaceCategorySlug($filters);
+        if ($categorySlug === null && empty($filters['category'])) {
+            return;
+        }
+
+        $categoryName = (string) ($filters['category'] ?? '');
+        $query->whereHas('category', function ($q) use ($categorySlug, $categoryName) {
+            if ($categorySlug !== null) {
+                $q->where('slug', $categorySlug);
+                return;
+            }
+
+            $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $q->where('name', $op, '%' . $categoryName . '%')
+                ->orWhere('slug', $op, '%' . str_replace(' ', '-', mb_strtolower($categoryName)) . '%');
+        });
+    }
+
+    private function resolveMarketplaceCategorySlug(array $filters): ?string
+    {
+        $category = str_replace('_', '-', mb_strtolower(trim((string) ($filters['category'] ?? ''))));
+        $petType = str_replace('_', '-', mb_strtolower(trim((string) ($filters['pet_type'] ?? ''))));
+
+        if ($petType === 'fish') {
+            return 'fish-aquatics';
+        }
+
+        if ($petType === 'bird') {
+            return 'bird-supplies';
+        }
+
+        if (in_array($petType, ['small-animal', 'small animal', 'rabbit', 'hamster', 'guinea pig'], true)) {
+            return 'small-animals';
+        }
+
+        if ($category === 'food') {
+            return match ($petType) {
+                'dog' => 'dog-food',
+                'cat' => 'cat-food',
+                default => null,
+            };
+        }
+
+        return match ($category) {
+            'dog-food', 'cat-food', 'pet-health', 'pet-toys', 'pet-grooming',
+            'fish-aquatics', 'collars-leads', 'pet-beds', 'small-animals',
+            'bird-supplies' => $category,
+            'health', 'medicine', 'supplement' => 'pet-health',
+            'toys', 'toy' => 'pet-toys',
+            'grooming', 'groom' => 'pet-grooming',
+            'collars', 'collar', 'leash', 'harness' => 'collars-leads',
+            'beds', 'bed' => 'pet-beds',
+            'fish aquatics', 'aquarium', 'aquatics' => 'fish-aquatics',
+            'bird supplies' => 'bird-supplies',
+            default => null,
+        };
     }
 }

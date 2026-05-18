@@ -10,6 +10,10 @@ interface ProductImageGalleryProps {
   productName: string
 }
 
+function shouldBypassOptimizer(src: string): boolean {
+  return src.startsWith('/products/')
+}
+
 export function ProductImageGallery({ images, productName }: ProductImageGalleryProps) {
   const normalized = images.length ? images : ['/placeholder-product.png']
   const [activeIndex, setActiveIndex] = useState(0)
@@ -26,6 +30,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
           src={broken[activeIndex] ? '/placeholder-product.png' : normalized[activeIndex]}
           alt={`${productName} — image ${activeIndex + 1}`}
           fill
+          unoptimized={shouldBypassOptimizer(normalized[activeIndex])}
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 50vw"
           priority
@@ -85,6 +90,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
                 src={broken[i] ? '/placeholder-product.png' : src}
                 alt={`Thumbnail ${i + 1}`}
                 fill
+                unoptimized={shouldBypassOptimizer(src)}
                 className="object-cover"
                 sizes="64px"
                 onError={() => setBroken((b) => ({ ...b, [i]: true }))}

@@ -11,6 +11,7 @@ import {
   Send,
   ShieldAlert,
   Sparkles,
+  Trash2,
   X,
 } from 'lucide-react'
 import { sendChatbotMessage } from '@/lib/chatbot'
@@ -31,7 +32,10 @@ type ProductRec = {
   rating?: number
   category?: string | null
   pet_type?: string | null
+  age_group?: string | null
+  brand?: string | null
   stock?: number | null
+  description?: string | null
   slug?: string
 }
 
@@ -60,6 +64,16 @@ const QUICK_QUESTIONS = [
   { label: 'Cat food under 1000 BDT', group: 'Budget' },
   { label: 'Safe products for kittens', group: 'Care' },
 ]
+
+const CHAT_HISTORY_KEY = 'pm_chatbot_messages'
+const CHAT_SESSION_KEY = 'pm_chatbot_session_id'
+
+const INITIAL_MESSAGE: Msg = {
+  id: 'welcome',
+  sender: 'ai',
+  text: "Hi! I'm your PetCare AI assistant. Ask me about food, grooming, care tips, or product suggestions.",
+  createdAt: Date.now(),
+}
 
 function makeMsgId(): string {
   return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -160,7 +174,11 @@ function ProductRecommendationCard({ product }: { product: ProductRec }) {
           <div className="mt-1 flex flex-wrap gap-1">
             {product.category && <Badge variant="neutral">{product.category}</Badge>}
             {product.pet_type && <Badge variant="brand">{product.pet_type}</Badge>}
+            {product.brand && <Badge variant="ai">{product.brand}</Badge>}
           </div>
+          {typeof product.stock === 'number' && (
+            <p className="mt-1 text-[11px] text-gray-500">{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</p>
+          )}
           <p className="mt-1 text-[11px] text-gray-500">Recommended for your query</p>
         </div>
       </div>
@@ -182,31 +200,42 @@ export function ChatbotWidget() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [sessionId, setSessionId] = useState<string>('')
-  const [messages, setMessages] = useState<Msg[]>([
-    {
-      id: makeMsgId(),
-      sender: 'ai',
-      text: "Hi! I'm your PetCare AI assistant. Ask me about food, grooming, care tips, or product suggestions.",
-      createdAt: Date.now(),
-    },
-  ])
+  const [historyReady, setHistoryReady] = useState(false)
+  const [messages, setMessages] = useState<Msg[]>([INITIAL_MESSAGE])
 
   const listRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const key = 'pm_chatbot_session_id'
-    let sid = localStorage.getItem(key)
+    let sid = localStorage.getItem(CHAT_SESSION_KEY)
     if (!sid) {
       sid = crypto.randomUUID()
-      localStorage.setItem(key, sid)
+      localStorage.setItem(CHAT_SESSION_KEY, sid)
     }
     setSessionId(sid)
+
+    try {
+      const saved = localStorage.getItem(CHAT_HISTORY_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved) as Msg[]
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed.slice(-40))
+        }
+      }
+    } catch {
+      localStorage.removeItem(CHAT_HISTORY_KEY)
+    }
+    setHistoryReady(true)
   }, [])
 
   useEffect(() => {
     if (!listRef.current) return
     listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, loading, open])
+
+  useEffect(() => {
+    if (!historyReady) return
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages.slice(-40)))
+  }, [historyReady, messages])
 
   const canSend = useMemo(() => input.trim().length > 1 && !loading, [input, loading])
 
@@ -224,7 +253,7 @@ export function ChatbotWidget() {
     try {
       const data = await sendChatbotMessage({ message: text, session_id: sessionId || undefined })
       if (data.session_id && data.session_id !== sessionId) {
-        localStorage.setItem('pm_chatbot_session_id', data.session_id)
+        localStorage.setItem(CHAT_SESSION_KEY, data.session_id)
         setSessionId(data.session_id)
       }
 
@@ -251,7 +280,7 @@ export function ChatbotWidget() {
           id: makeMsgId(),
           sender: 'ai',
           text:
-            'Sorry, I am having trouble connecting right now. You can still browse recommended pet products or try again.',
+            "Sorry, I'm having trouble connecting to AI right now. I can still help with general pet food, grooming, and product guidance.",
           isError: true,
           createdAt: Date.now(),
         },
@@ -260,6 +289,15 @@ export function ChatbotWidget() {
     } finally {
       setLoading(false)
     }
+  }
+
+  function clearChat() {
+    const sid = crypto.randomUUID()
+    localStorage.setItem(CHAT_SESSION_KEY, sid)
+    localStorage.removeItem(CHAT_HISTORY_KEY)
+    setSessionId(sid)
+    setInput('')
+    setMessages([{ ...INITIAL_MESSAGE, id: makeMsgId(), createdAt: Date.now() }])
   }
 
   return (
@@ -282,7 +320,7 @@ export function ChatbotWidget() {
         <div className="fixed inset-0 z-50 flex items-end justify-end sm:bottom-5 sm:right-5 sm:inset-auto">
           <div className="absolute inset-0 bg-black/20 sm:hidden" onClick={() => setOpen(false)} />
 
-          <div className="relative z-10 flex h-[88dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-orange-100 bg-white/95 shadow-2xl backdrop-blur sm:h-[700px] sm:max-h-[86vh] sm:w-[420px] sm:rounded-3xl">
+          <div className="relative z-10 flex h-[88dvh] w-full translate-y-0 flex-col overflow-hidden rounded-t-3xl border border-orange-100 bg-white/95 shadow-2xl backdrop-blur transition-all duration-200 sm:h-[700px] sm:max-h-[86vh] sm:w-[420px] sm:rounded-3xl">
             <div className="border-b border-orange-100 bg-gradient-to-r from-orange-100 via-amber-50 to-white px-4 py-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2">
@@ -295,13 +333,24 @@ export function ChatbotWidget() {
                     <p className="truncate text-xs text-orange-700/75">Care tips, product help & safe guidance</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg p-1.5 text-orange-400 transition hover:bg-orange-100 hover:text-orange-700"
-                  aria-label="Close chatbot"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={clearChat}
+                    className="rounded-lg p-1.5 text-orange-400 transition hover:bg-orange-100 hover:text-orange-700"
+                    aria-label="Clear chat"
+                    title="Clear chat"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg p-1.5 text-orange-400 transition hover:bg-orange-100 hover:text-orange-700"
+                    aria-label="Close chatbot"
+                    title="Close"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
               <div className="mt-2">
                 <AIChip label="PetCare AI can share general guidance, not veterinary diagnosis." className="border-orange-200 bg-orange-50 text-[11px] text-orange-800" />
@@ -372,7 +421,8 @@ export function ChatbotWidget() {
                     key={q.label}
                     type="button"
                     onClick={() => onSend(q.label)}
-                    className="shrink-0 rounded-full border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-3 py-1.5 text-xs font-medium text-orange-700 transition hover:border-orange-300 hover:bg-orange-100"
+                    disabled={loading}
+                    className="shrink-0 rounded-full border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-3 py-1.5 text-xs font-medium text-orange-700 transition hover:border-orange-300 hover:bg-orange-100 disabled:cursor-not-allowed disabled:opacity-55"
                   >
                     <span className="mr-1 text-[10px] text-orange-500">{q.group}</span>
                     {q.label}

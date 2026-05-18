@@ -72,17 +72,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (input: LoginInput): Promise<User> => {
     dispatch({ type: 'SET_LOADING' })
-    const response = await apiLogin(input)
-    saveToken(response.data.token.access_token)
-    dispatch({ type: 'SET_USER', user: response.data.user })
-    return response.data.user
+    try {
+      const response = await apiLogin(input)
+      saveToken(response.data.token.access_token)
+      dispatch({ type: 'SET_USER', user: response.data.user })
+      return response.data.user
+    } catch (error) {
+      clearToken()
+      dispatch({ type: 'SET_UNAUTHENTICATED' })
+      throw error
+    }
   }, [])
 
   const register = useCallback(async (input: RegisterInput) => {
     dispatch({ type: 'SET_LOADING' })
-    const response = await apiRegister(input)
-    saveToken(response.data.token.access_token)
-    dispatch({ type: 'SET_USER', user: response.data.user })
+    try {
+      const response = await apiRegister(input)
+      saveToken(response.data.token.access_token)
+      dispatch({ type: 'SET_USER', user: response.data.user })
+    } catch (error) {
+      clearToken()
+      dispatch({ type: 'SET_UNAUTHENTICATED' })
+      throw error
+    }
   }, [])
 
   const logout = useCallback(async () => {

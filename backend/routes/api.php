@@ -50,11 +50,13 @@ Route::prefix('auth/social')->name('auth.social.')->group(function () {
 Route::get('categories',      [CategoryController::class, 'index'])->name('categories.index');
 Route::get('products',        [ProductController::class, 'index'])->name('products.index');
 Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('ai/suggestions',  [ProductController::class, 'aiSuggestions'])->name('ai.suggestions');
 Route::post('ai/product-search', [AIController::class, 'productSearch'])->name('ai.product-search');
 Route::post('ai-search', AiSearchController::class)->name('ai.search');
 Route::post('ai-search-legacy', AiProductSearchController::class)->name('ai.search.legacy');
 Route::middleware(['auth.jwt', 'throttle:20,1'])->post('ai/product-description/generate', [AiProductDescriptionController::class, 'generate'])->name('ai.product-description.generate');
 Route::middleware('throttle:40,1')->post('chatbot/message', [ChatbotController::class, 'message'])->name('chatbot.message');
+Route::middleware('throttle:40,1')->post('ai-chat', [ChatbotController::class, 'message'])->name('ai.chat');
 
 // ── Authenticated Routes ──────────────────────────────────────────────────────
 Route::middleware('auth.jwt')->group(function () {

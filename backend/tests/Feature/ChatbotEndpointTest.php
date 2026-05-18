@@ -14,24 +14,40 @@ class ChatbotEndpointTest extends TestCase
 
     public function test_guest_chat_creates_session_and_messages_and_recommendations(): void
     {
+        config([
+            'services.ai_chat.provider' => 'gemini',
+            'services.ai_chat.gemini_key' => 'test-gemini-key',
+            'services.ai_chat.gemini_model' => 'gemini-1.5-flash',
+        ]);
+
         Http::fake([
-            'http://127.0.0.1:8001/chatbot/message' => Http::response([
-                'reply' => 'For a puppy, choose balanced puppy food.',
-                'intent' => 'food_advice',
-                'pet_type' => 'dog',
-                'category' => 'food',
-                'age_group' => 'puppy',
-                'price_min' => null,
-                'price_max' => 1000,
-                'safety_level' => 'safe',
-                'vet_warning' => null,
-                'recommended_product_filters' => [
-                    'pet_type' => 'dog',
-                    'category' => 'food',
-                    'age_group' => 'puppy',
-                    'price_max' => 1000,
+            'https://generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
+                    [
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => json_encode([
+                                        'reply' => 'For a puppy, choose balanced puppy food.',
+                                        'intent' => 'food_advice',
+                                        'pet_type' => 'dog',
+                                        'category' => 'food',
+                                        'age_group' => 'puppy',
+                                        'safety_level' => 'safe',
+                                        'vet_warning' => null,
+                                        'wants_product_recommendations' => true,
+                                        'recommended_product_filters' => [
+                                            'pet_type' => 'dog',
+                                            'category' => 'food',
+                                            'age_group' => 'puppy',
+                                            'price_max' => 1000,
+                                        ],
+                                    ]),
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
-                'confidence' => 0.91,
             ], 200),
         ]);
 
@@ -48,7 +64,7 @@ class ChatbotEndpointTest extends TestCase
             'images' => [],
         ]);
 
-        $response = $this->postJson('/api/chatbot/message', [
+        $response = $this->postJson('/api/ai-chat', [
             'message' => 'Which food is good for my puppy?',
             'session_id' => 'guest-1',
         ])->assertOk()->json();
@@ -64,8 +80,9 @@ class ChatbotEndpointTest extends TestCase
 
     public function test_chatbot_fallback_when_ai_down(): void
     {
-        Http::fake([
-            '*' => Http::response([], 500),
+        config([
+            'services.ai_chat.provider' => 'gemini',
+            'services.ai_chat.gemini_key' => '',
         ]);
 
         $response = $this->postJson('/api/chatbot/message', [

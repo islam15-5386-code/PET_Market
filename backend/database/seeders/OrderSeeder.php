@@ -13,8 +13,7 @@ class OrderSeeder extends Seeder
 {
     public function run(): void
     {
-        $products = Product::query()->get();
-        if ($products->isEmpty()) {
+        if (!Product::query()->exists()) {
             $this->command->warn('No products found; skipping OrderSeeder.');
             return;
         }
@@ -57,7 +56,13 @@ class OrderSeeder extends Seeder
             $createdAt = now()->subDays(rand(0, 29))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
             $itemsCount = rand(1, 3);
 
-            $pickedProducts = $products->random($itemsCount);
+            $pickedProducts = $this->pickAvailableProducts($itemsCount);
+
+            if ($pickedProducts->isEmpty()) {
+                $this->command->warn('No available products found; skipping one demo order.');
+                continue;
+            }
+
             $subtotal = 0.0;
 
             $order = Order::create([
@@ -104,5 +109,39 @@ class OrderSeeder extends Seeder
         }
 
         $this->command->info("Seeded {$ordersToCreate} demo orders for dashboard charts.");
+    }
+
+    private function pickAvailableProducts(int $count)
+    {
+        $minId = (int) Product::query()->min('id');
+        $maxId = (int) Product::query()->max('id');
+        $products = collect();
+        $seen = [];
+        $attempts = 0;
+
+        while ($products->count() < $count && $attempts < 40) {
+            $attempts++;
+            $randomId = random_int($minId, $maxId);
+            $product = Product::query()
+                ->available()
+                ->where('id', '>=', $randomId)
+                ->orderBy('id')
+                ->first();
+
+            if (!$product) {
+                $product = Product::query()
+                    ->available()
+                    ->where('id', '<', $randomId)
+                    ->orderByDesc('id')
+                    ->first();
+            }
+
+            if ($product && !isset($seen[$product->id])) {
+                $seen[$product->id] = true;
+                $products->push($product);
+            }
+        }
+
+        return $products;
     }
 }

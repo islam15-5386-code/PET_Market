@@ -8,6 +8,12 @@ export interface ChatbotProduct {
   image: string | null
   rating: number
   slug: string
+  brand?: string | null
+  pet_type?: string | null
+  age_group?: string | null
+  category?: string | null
+  stock?: number | null
+  description?: string | null
 }
 
 export interface ChatbotMessageResponse {
@@ -23,6 +29,8 @@ export interface ChatbotMessageResponse {
 }
 
 export async function sendChatbotMessage(payload: { message: string; session_id?: string }) {
-  const { data } = await api.post<ApiResponse<ChatbotMessageResponse>>('/chatbot/message', payload)
+  const { data } = await api.post<ApiResponse<ChatbotMessageResponse>>('/chatbot/message', payload, {
+    timeout: 45000,
+  })
   return data.data!
 }

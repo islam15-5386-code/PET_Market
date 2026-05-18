@@ -4,14 +4,14 @@ from typing import Optional
 from services.model_loader import load_model_bundle
 
 CATEGORY_MAP = {
+    "fish-aquatics": ["aquarium", "fish food", "fish tank", "aquatic", "flakes"],
+    "bird-supplies": ["bird food", "bird cage", "millet", "perch"],
     "food": ["food", "kibble", "meal", "khabar", "খাবার"],
     "grooming": ["shampoo", "grooming", "brush", "comb"],
     "health": ["medicine", "vitamin", "supplement", "health"],
     "toys": ["toy", "ball", "chew"],
     "collars": ["collar", "leash", "harness"],
     "beds": ["bed", "mat"],
-    "bird supplies": ["bird food", "bird cage"],
-    "fish aquatics": ["aquarium", "fish food", "fish tank"],
 }
 
 PET_MAP = {
@@ -62,7 +62,13 @@ def _normalize(text: str) -> str:
 
 
 def _detect_mapping(text: str, mapping: dict[str, list[str]]) -> Optional[str]:
-    for key, terms in mapping.items():
+    # Prefer more specific phrases such as "fish food" over generic "food".
+    ordered_items = sorted(
+        mapping.items(),
+        key=lambda item: max(len(term) for term in item[1]),
+        reverse=True,
+    )
+    for key, terms in ordered_items:
         if any(term in text for term in terms):
             return key
     return None
@@ -128,10 +134,18 @@ def parse_query(query: str) -> dict:
     if intent != "product_search":
         intent = "product_search"
 
+    category = _detect_mapping(normalized, CATEGORY_MAP)
+    pet_type = _detect_mapping(normalized, PET_MAP)
+
+    if pet_type == "fish" and category == "food":
+        category = "fish-aquatics"
+    elif pet_type == "bird" and category == "food":
+        category = "bird-supplies"
+
     return {
         "intent": intent,
-        "category": _detect_mapping(normalized, CATEGORY_MAP),
-        "pet_type": _detect_mapping(normalized, PET_MAP),
+        "category": category,
+        "pet_type": pet_type,
         "age_group": _detect_mapping(normalized, AGE_MAP),
         "location": _extract_location(normalized),
         "price_min": _extract_price_min(normalized),

@@ -67,4 +67,16 @@ class ProductController extends Controller
             'data'    => ['product' => new ProductDetailResource($product)],
         ]);
     }
+
+    // ── GET /api/ai/suggestions ───────────────────────────────────────────────
+
+    public function aiSuggestions(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'suggestions' => $this->productService->aiSuggestions(10),
+            ],
+        ]);
+    }
 }

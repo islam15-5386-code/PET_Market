@@ -24,11 +24,17 @@ const SORT_OPTIONS = [
   { value: 'rating', label: 'Top Rated' },
 ]
 
-const AI_QUERY_SUGGESTIONS_FALLBACK = [
-  'kitten food under 1000 BDT',
-  'grooming items for Persian cat',
-  'puppy shampoo in Dhaka',
-  'bird food in Mirpur',
+const DATA_SEARCH_SUGGESTIONS = [
+  'dog food under 1000 BDT',
+  'cat food in Dhaka',
+  'kitten food under 1500 BDT',
+  'puppy food in Chattogram',
+  'bird cage in Sylhet',
+  'fish aquarium filter under 2000 BDT',
+  'pet grooming shampoo in Dhaka',
+  'flea treatment for dog under 1200 BDT',
+  'interactive cat toy under 800 BDT',
+  'rabbit food in Rajshahi',
 ]
 
 function readFiltersFromURL(searchParams: URLSearchParams): ProductFilters {
@@ -53,7 +59,7 @@ function ProductsPageContent() {
   const [aiLoading, setAiLoading] = useState(false)
   const [aiError, setAiError] = useState<string | null>(null)
   const [aiResult, setAiResult] = useState<AIProductSearchResponse | null>(null)
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>(AI_QUERY_SUGGESTIONS_FALLBACK)
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>(DATA_SEARCH_SUGGESTIONS)
 
   const filters = readFiltersFromURL(searchParams)
   const { products, meta, loading, error } = useProducts(filters)
@@ -89,8 +95,10 @@ function ProductsPageContent() {
   const aiFallback = aiResult?.fallback_results ?? aiResult?.similar_products ?? []
   const aiDisplayProducts = aiResult ? (aiExact.length ? aiExact : aiFallback) : []
   const displayProducts = aiResult ? aiDisplayProducts : products
-  const displayLoading = aiLoading || loading
-  const displayError = aiError ?? error
+  // Keep catalog visible during AI calls; only show full skeleton for base catalog loading.
+  const displayLoading = loading
+  // If AI result mode is active, don't let base product-list errors hide AI results.
+  const displayError = aiResult ? aiError : (aiError ?? error)
 
   useEffect(() => {
     let mounted = true
@@ -99,9 +107,7 @@ function ProductsPageContent() {
         if (!mounted) return
         if (items.length > 0) setAiSuggestions(items)
       })
-      .catch(() => {
-        // keep fallback suggestions
-      })
+      .catch(() => {})
 
     return () => {
       mounted = false
@@ -211,13 +217,29 @@ function ProductsPageContent() {
           </div>
         )}
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          {aiSuggestions.map((q) => (
-            <button key={q} type="button" onClick={() => runAISearchWithQuery(q)} className="rounded-full border border-sky-200 bg-white px-3 py-1.5 text-xs text-sky-700 transition-all duration-200 hover:border-sky-300 hover:bg-sky-50 hover:shadow-sm">
-              {q}
-            </button>
-          ))}
-        </div>
+        {aiSuggestions.length > 0 && (
+          <div className="mt-3">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">Try searches from your catalog:</span>
+              <span className="rounded-full bg-white/70 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+                food, grooming, toys, beds, health, fish, bird, rabbit
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {aiSuggestions.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => runAISearchWithQuery(q)}
+                  disabled={aiLoading}
+                  className="rounded-full border border-sky-200 bg-white px-3 py-1.5 text-xs font-medium text-sky-700 transition-all duration-200 hover:border-sky-300 hover:bg-sky-50 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-8">
@@ -242,6 +264,11 @@ function ProductsPageContent() {
         )}
 
         <div className="min-w-0 flex-1">
+          {aiLoading && (
+            <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-700">
+              AI is finding the best matches...
+            </div>
+          )}
           {aiResult && aiExact.length > 0 && <p className="mb-3 text-xs font-medium text-emerald-700">Exact matches</p>}
           {aiResult && aiExact.length === 0 && aiFallback.length > 0 && (
             <p className="mb-3 text-xs font-medium text-amber-700">Similar products from other locations</p>

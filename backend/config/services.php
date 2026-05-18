@@ -54,4 +54,13 @@ return [
         'chatbot_timeout' => env('AI_CHATBOT_TIMEOUT', 30),
     ],
 
+    'ai_chat' => [
+        'provider' => env('AI_PROVIDER', 'gemini'),
+        'timeout' => env('AI_CHAT_TIMEOUT_SECONDS', env('AI_TIMEOUT_SECONDS', 20)),
+        'gemini_key' => env('GEMINI_API_KEY'),
+        'gemini_model' => env('GEMINI_MODEL', 'gemini-1.5-flash'),
+        'openai_key' => env('OPENAI_API_KEY'),
+        'openai_model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+    ],
+
 ];

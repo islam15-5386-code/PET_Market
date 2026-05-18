@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PetMarket CSV Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f5f7fb; color: #1f2937; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    h1 { margin: 0 0 14px; font-size: 28px; }
+    .muted { color: #6b7280; font-size: 14px; margin-bottom: 16px; }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .kpi { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; }
+    .kpi .label { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .kpi .value { font-size: 24px; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; }
+    .panel h2 { margin: 4px 6px 0; font-size: 16px; }
+    .chart { height: 360px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid #e5e7eb; text-align: left; padding: 8px; }
+    th { background: #f9fafb; }
+    @media (max-width: 900px) {
+      .kpis { grid-template-columns: 1fr 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>PetMarket Live CSV Dashboard</h1>
+    <div class="muted">Data source: CSV files in <code>powerbi_exports</code></div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="label">Total Products</div><div id="kpi-products" class="value">-</div></div>
+      <div class="kpi"><div class="label">Inventory Value</div><div id="kpi-inventory" class="value">-</div></div>
+      <div class="kpi"><div class="label">Avg Price</div><div id="kpi-price" class="value">-</div></div>
+      <div class="kpi"><div class="label">AI Training Rows</div><div id="kpi-ai" class="value">-</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Products by Category</h2>
+        <div id="catCount" class="chart"></div>
+      </div>
+      <div class="panel">
+        <h2>Inventory Value by Category</h2>
+        <div id="catValue" class="chart"></div>
+      </div>
+      <div class="panel">
+        <h2>Products by Location</h2>
+        <div id="locCount" class="chart"></div>
+      </div>
+      <div class="panel">
+        <h2>Price Bucket Distribution</h2>
+        <div id="priceBucket" class="chart"></div>
+      </div>
+      <div class="panel" style="grid-column: 1 / -1;">
+        <h2>Top Ordered Products</h2>
+        <table id="topTable">
+          <thead>
+            <tr>
+              <th>Product</th><th>Category</th><th>Brand</th><th>Pet Type</th><th>Units Sold</th><th>Sales Amount</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const num = (x) => Number(String(x || 0).replace(/,/g, "")) || 0;
+    const fmtInt = (x) => new Intl.NumberFormat().format(Math.round(x));
+    const fmtMoney = (x) => "$" + new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(x);
+
+    function loadCsv(path) {
+      return new Promise((resolve, reject) => {
+        Papa.parse(path, { download: true, header: true, skipEmptyLines: true,
+          complete: (r) => resolve(r.data), error: reject
+        });
+      });
+    }
+
+    async function run() {
+      const [cat, loc, price, ai, top] = await Promise.all([
+        loadCsv("category_summary.csv"),
+        loadCsv("location_summary.csv"),
+        loadCsv("price_bucket_summary.csv"),
+        loadCsv("ai_activity_summary.csv"),
+        loadCsv("top_ordered_products.csv")
+      ]);
+
+      const totalProducts = cat.reduce((s, r) => s + num(r.product_count), 0);
+      const totalInventory = cat.reduce((s, r) => s + num(r.inventory_value), 0);
+      const weightedAvg = totalInventory / Math.max(totalProducts, 1);
+      const aiRows = (ai.find(r => r.metric === "chatbot_training_data") || {}).value || 0;
+
+      document.getElementById("kpi-products").textContent = fmtInt(totalProducts);
+      document.getElementById("kpi-inventory").textContent = fmtMoney(totalInventory);
+      document.getElementById("kpi-price").textContent = fmtMoney(weightedAvg);
+      document.getElementById("kpi-ai").textContent = fmtInt(num(aiRows));
+
+      Plotly.newPlot("catCount", [{
+        type: "bar",
+        x: cat.map(r => r.category),
+        y: cat.map(r => num(r.product_count)),
+        marker: { color: "#2563eb" }
+      }], { margin: { t: 20, l: 50, r: 20, b: 90 } }, { displayModeBar: false, responsive: true });
+
+      Plotly.newPlot("catValue", [{
+        type: "bar",
+        orientation: "h",
+        x: cat.map(r => num(r.inventory_value)),
+        y: cat.map(r => r.category),
+        marker: { color: "#059669" }
+      }], { margin: { t: 20, l: 140, r: 20, b: 40 } }, { displayModeBar: false, responsive: true });
+
+      Plotly.newPlot("locCount", [{
+        type: "bar",
+        x: loc.map(r => r.location),
+        y: loc.map(r => num(r.product_count)),
+        marker: { color: "#7c3aed" }
+      }], { margin: { t: 20, l: 50, r: 20, b: 90 } }, { displayModeBar: false, responsive: true });
+
+      Plotly.newPlot("priceBucket", [{
+        type: "pie",
+        labels: price.map(r => r.price_bucket),
+        values: price.map(r => num(r.product_count)),
+        hole: 0.45
+      }], { margin: { t: 20, l: 20, r: 20, b: 20 } }, { displayModeBar: false, responsive: true });
+
+      const tbody = document.querySelector("#topTable tbody");
+      tbody.innerHTML = top.slice(0, 12).map(r => `
+        <tr>
+          <td>${r.product_name}</td>
+          <td>${r.category}</td>
+          <td>${r.brand}</td>
+          <td>${r.pet_type}</td>
+          <td>${fmtInt(num(r.units_sold))}</td>
+          <td>${fmtMoney(num(r.sales_amount))}</td>
+        </tr>
+      `).join("");
+    }
+
+    run().catch((e) => {
+      document.body.innerHTML = "<div style='padding:20px;font-family:Arial'>Dashboard load failed: " + String(e) + "</div>";
+    });
+  </script>
+</body>
+</html>

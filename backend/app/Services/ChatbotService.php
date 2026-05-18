@@ -34,18 +34,47 @@ class ChatbotService
             ->values()
             ->all();
 
+        $localContext = $this->aiClient->localContext($message);
+        $candidateProducts = collect();
+        if ($localContext['wants_product_recommendations'] ?? false) {
+            $candidateProducts = $this->recommendationService->recommend(
+                $localContext['recommended_product_filters'] ?? [],
+                allowGenericFallback: true,
+            );
+        }
+
         try {
             $ai = $this->aiClient->ask([
                 'message' => $message,
                 'session_id' => $session->session_uuid,
                 'user_id' => $userId,
                 'conversation_history' => $history,
+                'local_context' => $localContext,
+                'product_context' => $candidateProducts->map(fn ($p) => [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'price' => (float) $p->price,
+                    'stock' => (int) $p->stock_quantity,
+                    'brand' => $p->brand,
+                    'pet_type' => $p->pet_type,
+                    'age_group' => $p->age_group,
+                    'category' => $p->category?->name,
+                    'description' => $p->description,
+                ])->values()->all(),
             ]);
         } catch (\Throwable) {
-            $ai = $this->fallbackAi($message);
+            $ai = $this->aiClient->fallbackResponse($message, $localContext, apiUnavailable: true);
         }
 
-        $products = $this->recommendationService->recommend($ai['recommended_product_filters'] ?? []);
+        $wantsProducts = (bool) ($ai['wants_product_recommendations'] ?? $localContext['wants_product_recommendations'] ?? false);
+        $filters = array_filter(array_merge(
+            $localContext['recommended_product_filters'] ?? [],
+            $ai['recommended_product_filters'] ?? [],
+        ), fn ($value) => $value !== null && $value !== '');
+
+        $products = $wantsProducts
+            ? $this->recommendationService->recommend($filters, allowGenericFallback: true)
+            : collect();
 
         $aiMessage = ChatbotMessage::query()->create([
             'chatbot_session_id' => $session->id,
@@ -81,9 +110,15 @@ class ChatbotService
                 'id' => $p->id,
                 'name' => $p->name,
                 'price' => (float) $p->price,
-                'image' => !empty($p->images) ? (str_starts_with($p->images[0], 'http') ? $p->images[0] : asset('storage/' . $p->images[0])) : null,
+                'image' => $this->resolveProductImage($p),
                 'rating' => (float) $p->rating,
                 'slug' => $p->slug,
+                'brand' => $p->brand,
+                'pet_type' => $p->pet_type,
+                'age_group' => $p->age_group,
+                'category' => $p->category?->name,
+                'stock' => (int) $p->stock_quantity,
+                'description' => $p->description,
             ])->values(),
         ];
     }
@@ -105,32 +140,22 @@ class ChatbotService
         ]);
     }
 
-    private function fallbackAi(string $message): array
+    private function resolveProductImage($product): ?string
     {
-        $lower = strtolower($message);
-        $emergency = str_contains($lower, 'bleeding') || str_contains($lower, 'breathing') || str_contains($lower, 'seizure');
-        if ($emergency) {
-            return [
-                'reply' => 'This may be serious. Please contact a veterinarian immediately.',
-                'intent' => 'emergency_warning',
-                'pet_type' => null,
-                'category' => null,
-                'age_group' => null,
-                'safety_level' => 'emergency',
-                'vet_warning' => 'This may be serious. Please contact a veterinarian immediately.',
-                'recommended_product_filters' => [],
-            ];
+        if (!empty($product->image_url)) {
+            return str_starts_with($product->image_url, 'http') || str_starts_with($product->image_url, '/')
+                ? $product->image_url
+                : asset('storage/' . $product->image_url);
         }
 
-        return [
-            'reply' => 'I can help with food, grooming, and product suggestions. Please share pet type and need.',
-            'intent' => 'unknown',
-            'pet_type' => null,
-            'category' => null,
-            'age_group' => null,
-            'safety_level' => 'safe',
-            'vet_warning' => null,
-            'recommended_product_filters' => [],
-        ];
+        $images = $product->images ?? [];
+        $first = $images[0] ?? null;
+        if (!$first) {
+            return null;
+        }
+
+        return str_starts_with($first, 'http') || str_starts_with($first, '/')
+            ? $first
+            : asset('storage/' . $first);
     }
 }

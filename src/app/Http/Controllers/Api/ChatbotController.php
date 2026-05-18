@@ -16,7 +16,7 @@ class ChatbotController extends Controller
     public function message(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'message' => ['required', 'string', 'min:2', 'max:2000'],
+            'message' => ['required', 'string', 'min:1', 'max:2000'],
             'session_id' => ['nullable', 'string', 'max:100'],
         ]);
 

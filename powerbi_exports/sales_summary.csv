@@ -1,0 +1,6 @@
+status,city,order_count,item_lines,units_sold,gross_sales,avg_order_value
+delivered,Dhaka,24,52,96,189403.45,8874.19
+cancelled,Dhaka,7,14,33,114438.14,19140.5
+pending,Dhaka,6,11,24,60597.29,11739.59
+processing,Dhaka,5,11,21,53862.75,13564.0
+shipped,Dhaka,3,7,14,39136.15,15993.95

@@ -6,8 +6,6 @@ $mysqlSslCa = null;
 if (extension_loaded('pdo_mysql')) {
     if (class_exists('Pdo\\Mysql') && defined('Pdo\\Mysql::ATTR_SSL_CA')) {
         $mysqlSslCa = Pdo\Mysql::ATTR_SSL_CA;
-    } elseif (defined('PDO::MYSQL_ATTR_SSL_CA')) {
-        $mysqlSslCa = PDO::MYSQL_ATTR_SSL_CA;
     }
 }
 

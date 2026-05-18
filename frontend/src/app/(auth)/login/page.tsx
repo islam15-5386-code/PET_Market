@@ -27,7 +27,10 @@ function LoginPageContent() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const redirectTo = searchParams.get('redirect') ?? '/'
+  const rawRedirectTo = searchParams.get('redirect') ?? '/'
+  const redirectTo = rawRedirectTo.startsWith('/') && !rawRedirectTo.startsWith('//')
+    ? rawRedirectTo
+    : '/'
 
   React.useEffect(() => {
     const savedEmail = window.localStorage.getItem('pm_remember_email')

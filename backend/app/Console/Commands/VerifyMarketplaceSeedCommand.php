@@ -12,16 +12,16 @@ class VerifyMarketplaceSeedCommand extends Command
     protected $description = 'Verify category/product counts and filterability for marketplace seed';
 
     private const EXPECTED = [
-        'dog-food' => 180000,
-        'cat-food' => 160000,
-        'pet-health' => 120000,
-        'pet-toys' => 110000,
+        'dog-food' => 150000,
+        'cat-food' => 150000,
+        'bird-supplies' => 100000,
+        'fish-aquatics' => 100000,
         'pet-grooming' => 100000,
-        'fish-aquatics' => 90000,
-        'collars-leads' => 90000,
+        'pet-health' => 100000,
+        'pet-toys' => 100000,
+        'collars-leads' => 70000,
         'pet-beds' => 70000,
-        'small-animals' => 50000,
-        'bird-supplies' => 30000,
+        'small-animals' => 60000,
     ];
 
     public function handle(): int
@@ -81,4 +81,3 @@ class VerifyMarketplaceSeedCommand extends Command
         return $ok ? self::SUCCESS : self::FAILURE;
     }
 }
-

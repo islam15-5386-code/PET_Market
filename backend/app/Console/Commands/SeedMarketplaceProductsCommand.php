@@ -358,7 +358,7 @@ class SeedMarketplaceProductsCommand extends Command
 
         [$minPrice, $maxPrice] = self::PRICE_RANGES[$slug];
         $price = mt_rand($minPrice * 100, $maxPrice * 100) / 100;
-        $stock = mt_rand(0, 500);
+        $stock = mt_rand(1, 500);
         $imageUrl = self::IMAGE_POOL[$slug][$sequence % count(self::IMAGE_POOL[$slug])];
         $brand = self::BRANDS[$slug][$sequence % count(self::BRANDS[$slug])];
         $petType = self::PET_TYPE[$slug];
@@ -389,7 +389,7 @@ class SeedMarketplaceProductsCommand extends Command
             'sku' => strtoupper(substr(str_replace('-', '', $slug), 0, 10)) . '-' . $uniquePart,
             'rating' => number_format(mt_rand(35, 50) / 10, 2, '.', ''),
             'review_count' => mt_rand(0, 10000),
-            'is_available' => $stock > 0,
+            'is_available' => true,
             'created_at' => $now,
             'updated_at' => $now,
         ];

@@ -6,9 +6,50 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class ProductService
 {
+    /**
+     * Build search prompts from the seeded marketplace shape.
+     * Keep this cheap for the 1M-row local dataset: no random full-table sort.
+     */
+    public function aiSuggestions(int $limit = 10): array
+    {
+        $suggestions = [
+            'dog food under 1000 BDT',
+            'cat food in Dhaka',
+            'kitten food under 1500 BDT',
+            'puppy food in Chattogram',
+            'bird cage in Sylhet',
+            'fish aquarium filter under 2000 BDT',
+            'pet grooming shampoo in Dhaka',
+            'flea treatment for dog under 1200 BDT',
+            'interactive cat toy under 800 BDT',
+            'dog collar leash in Gazipur',
+            'orthopedic pet bed under 3500 BDT',
+            'rabbit food in Rajshahi',
+            'hamster cage accessories',
+            'senior dog food under 2500 BDT',
+            'fish food flakes in Khulna',
+        ];
+
+        $availableCategories = Category::query()
+            ->whereIn('slug', [
+                'dog-food', 'cat-food', 'bird-supplies', 'fish-aquatics',
+                'pet-grooming', 'pet-health', 'pet-toys', 'collars-leads',
+                'pet-beds', 'small-animals',
+            ])
+            ->pluck('slug')
+            ->all();
+
+        if (empty($availableCategories)) {
+            return array_slice($suggestions, 0, $limit);
+        }
+
+        return array_slice($suggestions, 0, max(1, $limit));
+    }
+
     /**
      * Return filtered, sorted, paginated list of available products.
      */
@@ -16,7 +57,7 @@ class ProductService
     {
         $query = Product::query()
             ->with('category')
-            ->available();
+            ->where('is_available', true);
 
         // Full-text search across name and description
         if (!empty($filters['search'])) {

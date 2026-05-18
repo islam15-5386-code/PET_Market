@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class ChatbotRecommendationService
 {
-    public function recommend(array $filters): Collection
+    public function recommend(array $filters, bool $allowGenericFallback = true): Collection
     {
         $op = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
@@ -20,6 +20,17 @@ class ChatbotRecommendationService
         $priceMin = $filters['price_min'] ?? null;
         $priceMax = $filters['price_max'] ?? null;
 
+        if (
+            !$allowGenericFallback &&
+            !$category &&
+            !$petType &&
+            !$ageGroup &&
+            is_null($priceMin) &&
+            is_null($priceMax)
+        ) {
+            return collect();
+        }
+
         if ($category) {
             $q->whereHas('category', fn ($c) => $c->where('name', $op, "%{$category}%")->orWhere('slug', $op, "%{$category}%"));
         }
@@ -27,14 +38,16 @@ class ChatbotRecommendationService
         if ($petType) {
             $q->where(function ($sub) use ($petType, $op) {
                 $sub->where('name', $op, "%{$petType}%")
-                    ->orWhere('description', $op, "%{$petType}%");
+                    ->orWhere('description', $op, "%{$petType}%")
+                    ->orWhere('pet_type', $op, "%{$petType}%");
             });
         }
 
         if ($ageGroup) {
             $q->where(function ($sub) use ($ageGroup, $op) {
                 $sub->where('name', $op, "%{$ageGroup}%")
-                    ->orWhere('description', $op, "%{$ageGroup}%");
+                    ->orWhere('description', $op, "%{$ageGroup}%")
+                    ->orWhere('age_group', $op, "%{$ageGroup}%");
             });
         }
 
@@ -63,12 +76,17 @@ class ChatbotRecommendationService
             $fallbackPet = Product::query()->with('category')->available()
                 ->where(function ($sub) use ($petType, $op) {
                     $sub->where('name', $op, "%{$petType}%")
-                        ->orWhere('description', $op, "%{$petType}%");
+                        ->orWhere('description', $op, "%{$petType}%")
+                        ->orWhere('pet_type', $op, "%{$petType}%");
                 })
                 ->orderByDesc('rating')->orderByDesc('stock_quantity')->limit(5)->get();
             if ($fallbackPet->isNotEmpty()) {
                 return $fallbackPet;
             }
+        }
+
+        if (!$allowGenericFallback) {
+            return collect();
         }
 
         return Product::query()->with('category')->available()->orderByDesc('rating')->orderByDesc('stock_quantity')->limit(5)->get();

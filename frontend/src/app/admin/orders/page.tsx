@@ -115,28 +115,40 @@ export default function AdminOrdersPage() {
                         <OrderStatusBadge status={order.status as OrderStatus} />
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {allowed.length > 0 ? (
-                          <select
-                            disabled={isUpdating}
-                            defaultValue=""
-                            onChange={(e) => {
-                              if (e.target.value) {
-                                changeStatus(order.order_number, e.target.value)
-                                e.target.value = ''
-                              }
-                            }}
-                            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-40"
-                          >
-                            <option value="" disabled>
-                              {isUpdating ? 'Updating…' : 'Move to…'}
-                            </option>
-                            {allowed.map((s) => (
-                              <option key={s} value={s} className="capitalize">{s}</option>
-                            ))}
-                          </select>
-                        ) : (
-                          <span className="text-xs italic text-slate-400">Terminal</span>
-                        )}
+                        <div className="flex items-center justify-end gap-2">
+                          {order.status === 'pending' && (
+                            <button
+                              disabled={isUpdating}
+                              onClick={() => changeStatus(order.order_number, 'confirmed')}
+                              className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-40"
+                            >
+                              {isUpdating ? 'Accepting…' : 'Accept'}
+                            </button>
+                          )}
+
+                          {allowed.length > 0 ? (
+                            <select
+                              disabled={isUpdating}
+                              defaultValue=""
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  changeStatus(order.order_number, e.target.value)
+                                  e.target.value = ''
+                                }
+                              }}
+                              className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-40"
+                            >
+                              <option value="" disabled>
+                                {isUpdating ? 'Updating…' : 'Move to…'}
+                              </option>
+                              {allowed.map((s) => (
+                                <option key={s} value={s} className="capitalize">{s}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <span className="text-xs italic text-slate-400">Terminal</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   )

@@ -291,4 +291,250 @@ Full deployment runbook:
 2. Click a category card and confirm `/products?category=<slug>` filter is applied.
 3. Use search, price, and location filters and confirm paginated results.
 4. Confirm product list requests never exceed `limit=100`.
-# Pet
+---
+
+## বাংলা ডকুমেন্টেশন: পুরো সিস্টেম কীভাবে কাজ করে
+
+এই প্রজেক্টটি একটি **AI-enabled Pet Marketplace** যেখানে ইউজার পণ্য ব্রাউজ, সার্চ, কার্ট, অর্ডার, প্রোফাইল ম্যানেজ করতে পারে; আর AI অংশ দিয়ে স্মার্ট সার্চ, চ্যাটবট সহায়তা, এবং AI-জেনারেটেড প্রোডাক্ট ডিসক্রিপশন পাওয়া যায়।
+
+### 1) High-Level Architecture
+
+সিস্টেমে 3টি মূল অ্যাপ আছে:
+
+1. **Frontend (`frontend/`)**  
+   Next.js 14 + TypeScript + Tailwind CSS  
+   ইউজারের UI, page routing, form interaction, API call handling।
+
+2. **Backend (`src/`)**  
+   Laravel 11 + JWT auth  
+   মূল business logic, auth, product/cart/order API, admin API, AI service orchestration।
+
+3. **AI Service (`ai-service/`)**  
+   FastAPI + custom AI logic  
+   query parsing, chatbot response, description generation, safety-aware output।
+
+Database:
+- **PostgreSQL** (products, users, carts, orders, AI-related data/logs)
+
+Infra/Local runtime:
+- Docker Compose দিয়ে সব service একসাথে রান করা হয়।
+
+---
+
+### 2) Codebase Breakdown (Folder-wise)
+
+#### `frontend/`
+- `src/app/` → app-router pages (home, products, cart, checkout, auth, admin)
+- `src/components/` → reusable UI and feature components
+- `src/context/AuthContext` → logged-in user state and auth sync
+- `src/lib/` → API client, token attach logic, helpers
+- `src/types/` → TypeScript contracts
+
+#### `src/` (Laravel backend)
+- `routes/api.php` → সব REST API route
+- `app/Http/Controllers` → API endpoint handlers
+- `app/Services` → business logic
+- `app/Models` → Eloquent models
+- `database/migrations` → schema change
+- `database/seeders` → seed data (categories/products/users etc.)
+- `app/Console/Commands` → verify/seed utility commands
+
+#### `ai-service/`
+- `main.py` → FastAPI bootstrap + CORS + router include
+- `routers/` → feature endpoints
+  - `product_search.py`
+  - `pet_chatbot.py`
+  - `description_generator.py`
+  - `health.py`
+- `services/` → AI logic modules
+  - intent/query parsing
+  - response generation
+  - fallback/safety logic
+- `schemas/` → request/response validation (Pydantic)
+- `models/` → trained model artifacts (classifier/vectorizer/encoder)
+
+---
+
+### 3) End-to-End Request Flow
+
+#### সাধারণ product browsing flow
+1. ইউজার frontend-এ `/products` পেজে যায়  
+2. Next.js API call করে Laravel `/api/products`  
+3. Laravel DB query করে paginated response দেয়  
+4. Frontend card/grid হিসেবে render করে
+
+#### Cart/Checkout flow
+1. ইউজার Add to Cart ক্লিক করে  
+2. Frontend JWT token সহ Laravel cart API call করে  
+3. Backend cart table update করে  
+4. Checkout-এ order preview + place order হয়
+
+#### Admin flow
+1. Admin login  
+2. `/api/admin/*` endpoints hit  
+3. Product CRUD, order status, user management করা যায়
+
+---
+
+### 4) AI কীভাবে কাজ করে (Core Explanation)
+
+AI অংশ frontend থেকে সরাসরি database-এ যায় না। Flow:
+
+**Frontend → Laravel API → FastAPI AI service → Laravel → Frontend**
+
+Laravel মাঝখানে থেকে:
+- auth/role check করে
+- request sanitize করে
+- AI response normalize করে
+- প্রয়োজন হলে DB filter/query apply করে safe response দেয়
+
+#### AI Feature A: Smart Product Search
+- Endpoint family: `/ai/product-search/parse` (FastAPI), backend-integrated search routes
+- ইউজারের natural query parse করা হয়, যেমন:
+  - `kitten food under 1000 bdt`
+  - `dog toy under 500`
+- Parser structured filter বের করে:
+  - `pet_type`, `category`, `price_max`, `location`, `keywords`
+- Backend এই filter ব্যবহার করে product query চালায়
+- Result relevant এবং intent-aware হয়
+
+#### AI Feature B: Product Description Generator
+- Admin/Seller product data দিলে AI structured content generate করে:
+  - `professional_product_title`
+  - `short_description`
+  - `long_description`
+  - `benefits`
+  - `seo_keywords`
+  - `meta_title`, `meta_description`
+  - `safety_warning`
+- এই data edit করে save করা যায়
+- Marketplace listing quality ও SEO improve হয়
+
+#### AI Feature C: PetCare Chatbot
+- Endpoint: `/ai/pet-chatbot/message`
+- Chatbot intent detect করে (grooming, food advice, product recommendation)
+- Safety layer risky medical diagnosis/unsafe dosage avoid করে
+- প্রয়োজনে vet warning style response দেয়
+- Recommendation-ready product filters return করে
+
+#### AI Safety & Fallback Contribution
+- যদি provider error/timeout হয় → fallback template response
+- medical-sensitive প্রশ্নে conservative উত্তর
+- structured schema validation, যাতে random output frontend না ভাঙে
+
+---
+
+### 5) এই প্রজেক্টে AI-এর Contribution (Business Impact)
+
+AI অংশ শুধু “extra feature” না, core value driver:
+
+1. **Search conversion বাড়ায়**  
+   Natural ভাষার query থেকে দ্রুত relevant product।
+
+2. **Catalog quality বাড়ায়**  
+   AI-generated standardized description, tags, SEO metadata।
+
+3. **Support load কমায়**  
+   Chatbot basic pet-care/product প্রশ্ন handle করে।
+
+4. **Safety-first assistance**  
+   risky pet-health advice এ সতর্ক response policy।
+
+5. **Admin productivity**  
+   product content তৈরিতে সময় বাঁচায়।
+
+---
+
+### 6) Build & Run Process (Local)
+
+#### One-command startup
+```bash
+docker-compose up -d --build
+```
+
+এতে serviceগুলো চালু হয়:
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000/api`
+- AI service: `http://localhost:8001/health`
+- pgAdmin: `http://localhost:5050`
+
+#### Service health check
+```bash
+curl http://localhost:8000/api/health
+curl http://localhost:8001/health
+```
+
+#### Useful commands
+```bash
+docker-compose logs -f app
+docker-compose logs -f frontend
+docker-compose logs -f ai_service
+docker-compose down
+docker-compose down -v
+```
+
+#### PetCare AI Assistant setup
+The chatbot UI calls the Laravel backend endpoint `POST /api/ai-chat`, while the existing `POST /api/chatbot/message` endpoint remains available. API keys stay on the backend and are never exposed through `NEXT_PUBLIC_*`.
+
+Add one provider key in `backend/.env`:
+```bash
+AI_PROVIDER=gemini
+AI_CHAT_TIMEOUT_SECONDS=20
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-1.5-flash
+
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Provider behavior:
+- `AI_PROVIDER=openai` uses OpenAI when `OPENAI_API_KEY` is set.
+- Gemini is used when `GEMINI_API_KEY` is set.
+- If no usable key exists, the backend returns a safe local fallback response and still recommends matching store products when possible.
+- Emergency health messages use vet-first safety guidance and do not include diagnosis or medicine dosage.
+
+After editing env values:
+```bash
+cd backend
+php artisan config:clear
+```
+
+---
+
+### 7) Authentication & Security Model (Short)
+
+- Laravel JWT auth ব্যবহার করা হয়েছে
+- Protected endpoint-এ `Authorization: Bearer <token>` লাগে
+- Admin route role-protected
+- Frontend-এ শুধুমাত্র public env vars expose হয় (`NEXT_PUBLIC_*`)
+- Secret keys backend/AI env-এ থাকে, frontend-এ না
+
+---
+
+### 8) Database Model (Conceptual)
+
+Core entities:
+- `users`
+- `categories`
+- `products`
+- `cart_items` / `carts`
+- `orders` / `order_items`
+- AI-related logs/metadata fields (project configuration অনুযায়ী)
+
+Products table এ marketplace-focused fields আছে:
+- name, slug, category, pet_type
+- price, stock
+- image urls
+- description/meta info
+
+---
+
+### 9) System Summary
+
+এই সিস্টেমটি একটি production-style modular architecture follow করে:
+- UI layer (Next.js)
+- Business/API layer (Laravel)
+- AI intelligence layer (FastAPI)
+- Persistent data layer (PostgreSQL)
+
+ফলে feature development, scaling, deployment এবং debugging আলাদা আলাদা layer-এ সহজ হয়।

@@ -16,6 +16,10 @@ interface ProductCardProps {
 
 const FALLBACK_IMAGE = '/placeholder-product.png'
 
+function shouldBypassOptimizer(src: string | null): boolean {
+  return Boolean(src?.startsWith('/products/'))
+}
+
 export function ProductCard({ product }: ProductCardProps) {
   const { isAuthenticated } = useAuth()
   const { add } = useCart()
@@ -62,6 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
             src={imgSrc}
             alt={product.name}
             fill
+            unoptimized={shouldBypassOptimizer(imgSrc)}
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             onError={() => {

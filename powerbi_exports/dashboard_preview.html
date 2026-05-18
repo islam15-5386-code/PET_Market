@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PetMarket Power BI Preview</title>
+<style>
+  :root { --ink:#111827; --muted:#64748b; --orange:#f97316; --sky:#0284c7; --green:#059669; --rose:#e11d48; }
+  body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:var(--ink); background:#fff7ed; }
+  .wrap { max-width:1280px; margin:0 auto; padding:28px; }
+  h1 { margin:0; font-size:34px; letter-spacing:0; }
+  .sub { color:var(--muted); margin-top:6px; }
+  .cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:24px 0; }
+  .card { background:#fff; border:1px solid #fed7aa; border-radius:14px; padding:18px; box-shadow:0 14px 30px -24px rgba(124,45,18,.45); }
+  .metric { font-size:26px; font-weight:800; margin-top:6px; }
+  .label { color:var(--muted); font-size:13px; font-weight:700; text-transform:uppercase; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .panel { background:#fff; border:1px solid #fed7aa; border-radius:14px; padding:18px; }
+  .panel h2 { margin:0 0 14px; font-size:18px; }
+  .bar-row { display:grid; grid-template-columns:150px 1fr 92px; gap:10px; align-items:center; margin:9px 0; font-size:13px; }
+  .bar-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#334155; }
+  .bar-track { height:12px; background:#ffedd5; border-radius:999px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:999px; }
+  .bar-value { text-align:right; color:#475569; font-variant-numeric:tabular-nums; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { padding:9px 8px; border-bottom:1px solid #f1f5f9; text-align:left; }
+  th { color:#475569; font-size:12px; text-transform:uppercase; }
+  .note { margin-top:18px; color:#64748b; font-size:13px; }
+  @media (max-width:900px) { .cards,.grid { grid-template-columns:1fr; } .bar-row { grid-template-columns:110px 1fr 78px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PetMarket Data Dashboard Preview</h1>
+  <div class="sub">Power BI-ready export generated from your local SQLite marketplace dataset.</div>
+
+  <div class="cards">
+    <div class="card"><div class="label">Products</div><div class="metric">1,000,000</div></div>
+    <div class="card"><div class="label">Available Products</div><div class="metric">1,000,000</div></div>
+    <div class="card"><div class="label">Inventory Value</div><div class="metric">৳676,364,299,779</div></div>
+    <div class="card"><div class="label">AI Training Rows</div><div class="metric">1,000,000</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel"><h2>Products by Category</h2>
+        <div class="bar-row">
+          <div class="bar-label">Cat Food</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100.00%;background:#f97316"></div></div>
+          <div class="bar-value">150,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Dog Food</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100.00%;background:#f97316"></div></div>
+          <div class="bar-value">150,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Bird Supplies</div>
+          <div class="bar-track"><div class="bar-fill" style="width:66.67%;background:#f97316"></div></div>
+          <div class="bar-value">100,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Fish &amp; Aquatics</div>
+          <div class="bar-track"><div class="bar-fill" style="width:66.67%;background:#f97316"></div></div>
+          <div class="bar-value">100,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Grooming</div>
+          <div class="bar-track"><div class="bar-fill" style="width:66.67%;background:#f97316"></div></div>
+          <div class="bar-value">100,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Health</div>
+          <div class="bar-track"><div class="bar-fill" style="width:66.67%;background:#f97316"></div></div>
+          <div class="bar-value">100,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Toys</div>
+          <div class="bar-track"><div class="bar-fill" style="width:66.67%;background:#f97316"></div></div>
+          <div class="bar-value">100,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Collars &amp; Leads</div>
+          <div class="bar-track"><div class="bar-fill" style="width:46.67%;background:#f97316"></div></div>
+          <div class="bar-value">70,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Beds</div>
+          <div class="bar-track"><div class="bar-fill" style="width:46.67%;background:#f97316"></div></div>
+          <div class="bar-value">70,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Small Animals</div>
+          <div class="bar-track"><div class="bar-fill" style="width:40.00%;background:#f97316"></div></div>
+          <div class="bar-value">60,000</div>
+        </div></div>
+    <div class="panel"><h2>Inventory Value by Category</h2>
+        <div class="bar-row">
+          <div class="bar-label">Cat Food</div>
+          <div class="bar-track"><div class="bar-fill" style="width:65.35%;background:#0284c7"></div></div>
+          <div class="bar-value">৳99,276,230,735</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Dog Food</div>
+          <div class="bar-track"><div class="bar-fill" style="width:65.42%;background:#0284c7"></div></div>
+          <div class="bar-value">৳99,390,508,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Bird Supplies</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.14%;background:#0284c7"></div></div>
+          <div class="bar-value">৳76,163,468,499</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Fish &amp; Aquatics</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100.00%;background:#0284c7"></div></div>
+          <div class="bar-value">৳151,916,376,069</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Grooming</div>
+          <div class="bar-track"><div class="bar-fill" style="width:22.67%;background:#0284c7"></div></div>
+          <div class="bar-value">৳34,439,324,486</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Health</div>
+          <div class="bar-track"><div class="bar-fill" style="width:26.47%;background:#0284c7"></div></div>
+          <div class="bar-value">৳40,216,062,223</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Toys</div>
+          <div class="bar-track"><div class="bar-fill" style="width:17.75%;background:#0284c7"></div></div>
+          <div class="bar-value">৳26,969,076,154</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Collars &amp; Leads</div>
+          <div class="bar-track"><div class="bar-fill" style="width:21.34%;background:#0284c7"></div></div>
+          <div class="bar-value">৳32,411,594,578</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pet Beds</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.47%;background:#0284c7"></div></div>
+          <div class="bar-value">৳76,679,362,001</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Small Animals</div>
+          <div class="bar-track"><div class="bar-fill" style="width:25.61%;background:#0284c7"></div></div>
+          <div class="bar-value">৳38,902,297,034</div>
+        </div></div>
+    <div class="panel"><h2>Products by Location</h2>
+        <div class="bar-row">
+          <div class="bar-label">Dhaka</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100.00%;background:#059669"></div></div>
+          <div class="bar-value">100,298</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Sylhet</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.96%;background:#059669"></div></div>
+          <div class="bar-value">100,257</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Chattogram</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.87%;background:#059669"></div></div>
+          <div class="bar-value">100,167</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Barishal</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.72%;background:#059669"></div></div>
+          <div class="bar-value">100,020</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Rajshahi</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.69%;background:#059669"></div></div>
+          <div class="bar-value">99,985</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Khulna</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.66%;background:#059669"></div></div>
+          <div class="bar-value">99,961</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Gazipur</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.65%;background:#059669"></div></div>
+          <div class="bar-value">99,947</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Rangpur</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.58%;background:#059669"></div></div>
+          <div class="bar-value">99,875</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Narayanganj</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.55%;background:#059669"></div></div>
+          <div class="bar-value">99,846</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Mymensingh</div>
+          <div class="bar-track"><div class="bar-fill" style="width:99.35%;background:#059669"></div></div>
+          <div class="bar-value">99,644</div>
+        </div></div>
+    <div class="panel"><h2>Price Buckets</h2>
+        <div class="bar-row">
+          <div class="bar-label">Under 500</div>
+          <div class="bar-track"><div class="bar-fill" style="width:17.20%;background:#e11d48"></div></div>
+          <div class="bar-value">72,930</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">500-999</div>
+          <div class="bar-track"><div class="bar-fill" style="width:30.88%;background:#e11d48"></div></div>
+          <div class="bar-value">130,931</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">1000-1999</div>
+          <div class="bar-track"><div class="bar-fill" style="width:62.95%;background:#e11d48"></div></div>
+          <div class="bar-value">266,894</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">2000-4999</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100.00%;background:#e11d48"></div></div>
+          <div class="bar-value">423,957</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">5000+</div>
+          <div class="bar-track"><div class="bar-fill" style="width:24.83%;background:#e11d48"></div></div>
+          <div class="bar-value">105,288</div>
+        </div></div>
+  </div>
+
+  <div class="panel" style="margin-top:16px"><h2>Top Brands by Catalog Size</h2>
+        <div class="bar-row">
+          <div class="bar-label">Royal Canin</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">60,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Kaytee</div>
+          <div class="bar-track"><div class="bar-fill" style="width:53.33%;background:#7c3aed"></div></div>
+          <div class="bar-value">32,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Taste of the Wild</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Sheba</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Purina</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Whiskas</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Orijen</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Pedigree</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Acana</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Meow Mix</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50.00%;background:#7c3aed"></div></div>
+          <div class="bar-value">30,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">OceanFree</div>
+          <div class="bar-track"><div class="bar-fill" style="width:33.33%;background:#7c3aed"></div></div>
+          <div class="bar-value">20,000</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Fluval</div>
+          <div class="bar-track"><div class="bar-fill" style="width:33.33%;background:#7c3aed"></div></div>
+          <div class="bar-value">20,000</div>
+        </div></div>
+
+  <div class="panel" style="margin-top:16px">
+    <h2>Sales Snapshot</h2>
+    <table><thead><tr><th>Status</th><th>City</th><th>Orders</th><th>Units Sold</th><th>Gross Sales</th><th>Avg Order</th></tr></thead><tbody>
+    <tr><td>delivered</td><td>Dhaka</td><td>24</td><td>96</td><td>৳189,403</td><td>৳8,874</td></tr><tr><td>cancelled</td><td>Dhaka</td><td>7</td><td>33</td><td>৳114,438</td><td>৳19,140</td></tr><tr><td>pending</td><td>Dhaka</td><td>6</td><td>24</td><td>৳60,597</td><td>৳11,740</td></tr><tr><td>processing</td><td>Dhaka</td><td>5</td><td>21</td><td>৳53,863</td><td>৳13,564</td></tr><tr><td>shipped</td><td>Dhaka</td><td>3</td><td>14</td><td>৳39,136</td><td>৳15,994</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="note">Import the CSV files in this folder into Power BI Desktop. Suggested model: category_summary, location_summary, brand_summary, pet_type_summary, price_bucket_summary, sales_summary, top_ordered_products, ai_activity_summary, and products_sample_200k.</div>
+</div>
+</body>
+</html>

@@ -4,6 +4,11 @@ import Cookies from 'js-cookie'
 export const TOKEN_KEY = 'pm_token'
 
 function resolveApiBaseUrl(): string {
+  // Server-side (inside Docker/container) should use internal network URL when available.
+  if (typeof window === 'undefined' && process.env.INTERNAL_API_URL) {
+    return process.env.INTERNAL_API_URL
+  }
+
   if (process.env.NEXT_PUBLIC_API_URL) {
     // Prefer IPv4 loopback in local dev to avoid localhost/IPv6 resolution mismatches.
     return process.env.NEXT_PUBLIC_API_URL.replace('://localhost:', '://127.0.0.1:')
@@ -22,6 +27,7 @@ const apiBaseUrl = resolveApiBaseUrl()
 
 const api = axios.create({
   baseURL: apiBaseUrl,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -58,11 +64,19 @@ api.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean
     }
+    const requestUrl = originalRequest.url ?? ''
+    const isPublicAuthRequest = [
+      '/auth/login',
+      '/auth/register',
+      '/auth/forgot-password',
+      '/auth/reset-password',
+    ].some((path) => requestUrl.includes(path))
 
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('auth/refresh')
+      !requestUrl.includes('auth/refresh') &&
+      !isPublicAuthRequest
     ) {
       originalRequest._retry = true
 
