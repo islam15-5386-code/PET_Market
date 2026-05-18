@@ -57,7 +57,7 @@ class AiProductSearchController extends Controller
             'confidence' => 0.0,
         ];
 
-        $aiBaseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL', 'http://127.0.0.1:8001')), '/');
+        $aiBaseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL')), '/');
 
         try {
             $response = Http::timeout(5)->post("{$aiBaseUrl}/search/parse", [

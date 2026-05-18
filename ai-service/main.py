@@ -13,18 +13,19 @@ from routers.product_search import router as product_search_router
 APP_VERSION = "1.0.0"
 APP_SERVICE = os.getenv("APP_NAME", "pet-ai-service")
 
-frontend_url = os.getenv("APP_FRONTEND_URL", "http://localhost:3000").rstrip("/")
-backend_url = os.getenv("BACKEND_API_URL", "http://localhost:8000").rstrip("/")
+frontend_url = os.getenv("APP_FRONTEND_URL", "").rstrip("/")
+backend_url = os.getenv("BACKEND_API_URL", "").rstrip("/")
 extra_origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "").split(",") if origin.strip()]
-allowed_origins = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    frontend_url,
-    backend_url,
-    *extra_origins,
-]
+allowed_origins = [origin for origin in [frontend_url, backend_url, *extra_origins] if origin]
+
+# Local dev fallback only when nothing explicit is configured.
+if not allowed_origins:
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
 
 app = FastAPI(title="Pet Marketplace AI Service", version=APP_VERSION)
 

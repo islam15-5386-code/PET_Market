@@ -10,17 +10,14 @@ function resolveApiBaseUrl(): string {
   }
 
   if (process.env.NEXT_PUBLIC_API_URL) {
-    // Prefer IPv4 loopback in local dev to avoid localhost/IPv6 resolution mismatches.
-    return process.env.NEXT_PUBLIC_API_URL.replace('://localhost:', '://127.0.0.1:')
+    return process.env.NEXT_PUBLIC_API_URL
   }
 
   if (typeof window !== 'undefined') {
-    const protocol = window.location.protocol
-    const host = window.location.hostname
-    return `${protocol}//${host}:8000/api`
+    return `${window.location.origin}/api`
   }
 
-  return 'http://127.0.0.1:8000/api'
+  return 'http://localhost:8000/api'
 }
 
 const apiBaseUrl = resolveApiBaseUrl()

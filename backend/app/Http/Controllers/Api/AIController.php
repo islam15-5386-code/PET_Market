@@ -18,7 +18,7 @@ class AIController extends Controller
             'query' => ['required', 'string', 'min:2', 'max:500'],
         ]);
 
-        $aiBaseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL', 'http://127.0.0.1:8001')), '/');
+        $aiBaseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL')), '/');
 
         try {
             $aiResponse = Http::timeout(15)->post("{$aiBaseUrl}/ai/product-search", [

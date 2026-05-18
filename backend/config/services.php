@@ -49,7 +49,7 @@ return [
     ],
 
     'ai_service' => [
-        'url' => env('AI_SERVICE_URL', 'http://127.0.0.1:8001'),
+        'url' => env('AI_SERVICE_URL'),
         'description_timeout' => env('AI_DESCRIPTION_TIMEOUT', 30),
         'chatbot_timeout' => env('AI_CHATBOT_TIMEOUT', 30),
     ],

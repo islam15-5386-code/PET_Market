@@ -2,7 +2,7 @@ services:
   - type: web
     name: pet-marketplace-api
     runtime: php
-    rootDir: src
+    rootDir: backend
     plan: free
     buildCommand: |
       composer install --no-dev --optimize-autoloader
@@ -12,7 +12,6 @@ services:
       php artisan storage:link || true
     startCommand: |
       php artisan migrate --force
-      php artisan db:seed --force
       php -S 0.0.0.0:$PORT -t public public/index.php
     healthCheckPath: /api/health
     autoDeploy: true
@@ -26,4 +25,3 @@ services:
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     autoDeploy: true
-

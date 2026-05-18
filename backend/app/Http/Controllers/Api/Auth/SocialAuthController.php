@@ -30,7 +30,7 @@ class SocialAuthController extends Controller
     {
         $this->validateProvider($provider);
 
-        $frontendUrl = config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:3000'));
+        $frontendUrl = config('app.frontend_url', env('FRONTEND_URL'));
 
         try {
             $socialUser = Socialite::driver($provider)->stateless()->user();

@@ -18,7 +18,7 @@ class AiProductDescriptionService
         $error = null;
 
         try {
-            $baseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL', 'http://127.0.0.1:8001')), '/');
+            $baseUrl = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL')), '/');
             $timeout = (int) config('services.ai_service.description_timeout', 30);
             $response = Http::timeout(max(5, $timeout))->post("{$baseUrl}/ai/product-description/generate", $payload);
         } catch (ConnectionException $e) {

@@ -6,15 +6,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        // Development
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-
-        // Production — replace with your actual frontend domain
-        'https://petmarketplace.com',
-        'https://www.petmarketplace.com',
-    ],
+    'allowed_origins' => array_values(array_filter(array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', env('FRONTEND_URL', '')))))),
 
     'allowed_origins_patterns' => [
         '/^http:\\/\\/(localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0)(:\\d+)?$/',

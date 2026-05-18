@@ -28,7 +28,7 @@ class AiOrchestratorService
         ];
 
         try {
-            $base = rtrim(config('services.ai_service.url', env('AI_SERVICE_URL', 'http://127.0.0.1:8001')), '/');
+            $base = rtrim((string) config('services.ai_service.url', env('AI_SERVICE_URL')), '/');
             $response = Http::timeout(15)->post("{$base}/ai/route", [
                 'feature' => $feature,
                 'input' => $input,
